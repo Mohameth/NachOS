@@ -19,3 +19,5 @@ code/bin/.*.d
 .history
 
 # End of https://www.gitignore.io/api/visualstudiocode
+
+.directory

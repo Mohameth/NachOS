@@ -1,3 +1,11 @@
+# Attention
+## Lors du premier clone faire :
+```bash
+  git remote add official https://gricad-gitlab.univ-grenoble-alpes.fr/systeme/nachos.git
+  git fetch official
+```
+
+
 This README file describes the Nachos release.  Comments, questions,
 and bug reports are always welcome, and can be directed to 
 nachos@cs.berkeley.edu (for now, an alias to just me, Tom Anderson), or 

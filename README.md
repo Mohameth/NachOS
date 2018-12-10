@@ -5,6 +5,13 @@
   git fetch official
 ```
 
+## Si un fix est apporté sur NachOS faire :
+```git
+  cd workdir
+  git fetch official
+  git merge official/master # ask for help if there are issues you cannot resolve
+  git push
+```
 
 This README file describes the Nachos release.  Comments, questions,
 and bug reports are always welcome, and can be directed to 

@@ -21,3 +21,5 @@ code/bin/.*.d
 # End of https://www.gitignore.io/api/visualstudiocode
 
 .directory
+.vscode/launch.json
+.vscode/settings.json

@@ -49,4 +49,12 @@ extern SynchDisk *synchDisk;
 extern PostOffice *postOffice;
 #endif
 
+#ifdef CHANGED
+#ifdef USER_PROGRAM
+#include "synchconsole.h"
+extern SynchConsole * synchconsole;
+#define MAX_STRING_SIZE 2048
+#endif
+#endif
+
 #endif // SYSTEM_H

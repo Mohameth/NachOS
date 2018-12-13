@@ -29,6 +29,10 @@
 #define SC_Close	8
 #define SC_Fork		9
 #define SC_Yield	10
+#define SC_PutChar	11
+#define SC_PutString 12
+#define SC_GetChar  13
+#define SC_GetString 14
 
 #ifdef IN_USER_MODE
 
@@ -127,6 +131,22 @@ void Fork (void (*func) ());
  * or not. 
  */
 void Yield ();
+
+/* Put char on the standard output (stdout) by calling SynchConsole::PutChar
+*/
+void PutChar(char c);
+
+/*Put a String on the standard output (stdout)
+*/
+void PutString(char* s);
+
+/*Get a char on the standard input (stdin) and return the char
+*/
+char GetChar();
+
+/*Get a String of lenght size on the standard input (stdin) and write the char in ptr s
+*/
+void GetString(char * s, int size);
 
 #endif // IN_USER_MODE
 

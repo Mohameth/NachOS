@@ -65,22 +65,76 @@ UpdatePC ()
 //----------------------------------------------------------------------
 
 void
-ExceptionHandler (ExceptionType which)
-{
-    int type = machine->ReadRegister (2);
+ExceptionHandler (ExceptionType which) {
+  int type = machine->ReadRegister (2);
 
-    if ((which == SyscallException) && (type == SC_Halt))
-      {
-	  DEBUG ('a', "Shutdown, initiated by user program.\n");
-	  interrupt->Halt ();
-      }
-    else
-      {
-	  printf ("Unexpected user mode exception %d %d\n", which, type);
-	  ASSERT (FALSE);
+#ifndef CHANGED // Noter le if*n*def
+
+  if ((which == SyscallException) && (type == SC_Halt)) {
+    DEBUG ('a', "Shutdown, initiated by user program.\n");
+    interrupt->Halt ();
+  }
+  else {
+    printf ("Unexpected user mode exception %d %d\n", which, type);
+    ASSERT (FALSE);
+  }
+
+#else //CHANGED
+
+  if (which == SyscallException) {
+    switch(type) {
+
+      case SC_Halt: {
+        DEBUG('a', "Shutdown, initiated by user program.\n");
+        interrupt->Halt ();
+        break;
       }
 
+      case SC_Exit: {
+        DEBUG('a', "User Program terminate\n");
+        printf("exit with status %d\n",machine->ReadRegister(3));
+        interrupt->Halt();
+        break;
+      }
+
+      case SC_PutChar: {
+        synchconsole->SynchPutChar((char) machine->ReadRegister (4));
+        break;
+      }
+
+      case SC_PutString: {
+        int saddr =  machine->ReadRegister (4);
+        //int size =  machine->ReadRegister (5);
+        char s[MAX_STRING_SIZE];
+        synchconsole->copyStringFromMachine(saddr,s,MAX_STRING_SIZE);
+        synchconsole->SynchPutString(s);
+        break;
+      }
+
+      case SC_GetChar: {
+        char c = synchconsole->SynchGetChar();
+        machine->WriteRegister(2,(int) c);
+        break;
+      }
+
+      case SC_GetString: {
+        char * s = (char *) machine->ReadRegister(4);
+        int size = machine->ReadRegister(5);
+        synchconsole->SynchGetString(s,size);
+        break;
+      }
+
+      default: {
+        printf ("Unexpected user mode exception %d %d\n", which, type);
+        ASSERT (FALSE);
+      }
+
+    }
     // LB: Do not forget to increment the pc before returning!
     UpdatePC ();
     // End of addition
+  }
+
 }
+
+#endif //CHANGED

@@ -116,7 +116,7 @@ ConsoleTest (char *in, char *out)
 void SynchConsoleTest (char *in, char *out) {
     char ch;
 
-    SynchConsole *synchconsole = new SynchConsole(in,out);
+    synchconsole = new SynchConsole(in,out);
 
     while ((ch = synchconsole->SynchGetChar()) != EOF) {
         if (ch != '\n')

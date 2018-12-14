@@ -118,7 +118,9 @@ ExceptionHandler (ExceptionType which) {
       }
 
       case SC_GetString: {
-        char * s = (char *) machine->ReadRegister(4);
+        int addr = machine->ReadRegister(4);
+        char * s = (char *) addr;
+        //machine->ReadMem(addr,4,(int *) *s);
         int size = machine->ReadRegister(5);
         synchconsole->SynchGetString(s,size);
         break;

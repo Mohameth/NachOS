@@ -33,6 +33,8 @@
 #define SC_PutString 12
 #define SC_GetChar  13
 #define SC_GetString 14
+#define SC_PutInt    15
+#define SC_GetInt    16
 
 #ifdef IN_USER_MODE
 
@@ -147,6 +149,15 @@ char GetChar();
 /*Get a String of lenght size on the standard input (stdin) and write the char in ptr s
 */
 void GetString(char* s, int size);
+
+/* Put the integer n on the stardard output(stdout)
+*/
+void PutInt(int n);
+
+/* Get an integer on the stardard input(stdin)
+*/
+int GetInt();
+
 
 #endif // IN_USER_MODE
 

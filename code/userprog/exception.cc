@@ -119,10 +119,27 @@ ExceptionHandler (ExceptionType which) {
 
       case SC_GetString: {
         int addr = machine->ReadRegister(4);
-        char * s = (char *) addr;
-        //machine->ReadMem(addr,4,(int *) *s);
         int size = machine->ReadRegister(5);
+        // char * s = (char *) addr;
+        // synchconsole->SynchGetString(s,size);
+        char s [size];
         synchconsole->SynchGetString(s,size);
+
+        for (int i =0; i < size; i++) { 
+          machine->WriteMem((int) (addr+i),1,(int) s[i]);
+        }
+        break;
+      }
+
+      case SC_PutInt: {
+        int val = machine->ReadRegister(4);
+        synchconsole->SynchPutInt(val);
+        break;
+      }
+
+      case SC_GetInt: {
+        int val = synchconsole->SynchGetInt();
+        machine->WriteRegister(2,val);
         break;
       }
 

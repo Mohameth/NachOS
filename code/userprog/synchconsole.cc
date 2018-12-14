@@ -67,16 +67,48 @@ void SynchConsole::SynchGetString(char *s, int n)
     for (i =0; i < n-1; i++) {
         c = SynchGetChar();
         
-        if (c == EOF)
+        if (c == EOF || c == '\n')
             break;
 
-        machine->WriteMem((int) (s+i),1,(int) c);
+        *(s+i) = c;
+        //machine->WriteMem((int) (s+i),1,(int) c); // first solution : obsolete
     }
 
     char fin = '\0';
-    machine->WriteMem((int) (s+i),1,(int) fin);
+
+    if (c == '\n') {
+        *(s+i) = c;
+        //machine->WriteMem((int) (s+i),1,(int) c);
+        i++;
+    }
+
+    for (; i < n-1; i++) {
+        *(s+i) = fin;
+        //machine->WriteMem((int) (s+i),1,(int) fin);
+    }
+
+    *(s+i) = fin;
+    //machine->WriteMem((int) (s+i),1,(int) fin);
 
     getStringSem->V();
+}
+
+void SynchConsole::SynchPutInt(int n) {
+    char s[20];
+
+    snprintf(s,20,"%d",n);
+
+    SynchPutString(s);
+}
+
+int SynchConsole::SynchGetInt() {
+    char s[20];
+    int val = 0;
+
+    SynchGetString(s,20);
+    sscanf(s,"%d",&val);
+
+    return val;
 }
 
 #endif // CHANGED

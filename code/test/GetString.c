@@ -3,10 +3,10 @@
 
 int main()
 {
-    char s[50];
+    char s[20];
     //char ss[2048];
 
-    GetString(s,50);
+    GetString(s,20);
     
     PutString(s);
     //PutChar('\n');

@@ -69,9 +69,12 @@ void SynchConsole::SynchGetString(char *s, int n)
         
         if (c == EOF)
             break;
+
+        machine->WriteMem((int) (s+i),1,(int) c);
     }
 
-    *(s+(i-1)) = '\0';
+    char fin = '\0';
+    machine->WriteMem((int) (s+i),1,(int) fin);
 
     getStringSem->V();
 }

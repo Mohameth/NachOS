@@ -53,7 +53,7 @@ extern PostOffice *postOffice;
 #ifdef USER_PROGRAM
 #include "synchconsole.h"
 extern SynchConsole * synchconsole;
-#define MAX_STRING_SIZE 2048
+#define MAX_STRING_SIZE 50
 #endif
 #endif
 

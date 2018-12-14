@@ -3,18 +3,18 @@
 
 int main()
 {
-    char s[10];
-    char ss[5];
+    char s[50];
+    //char ss[2048];
 
-    GetString(s,10);
+    GetString(s,50);
     
     PutString(s);
-    PutChar('\n');
+    //PutChar('\n');
 
-     GetString(ss,5);
+    //GetString(ss,2048);
     
-    PutString(ss);
-    PutChar('\n');
+    //PutString(ss);
+    //PutChar('\n');
 
     Halt();
 }

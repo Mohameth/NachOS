@@ -146,7 +146,7 @@ char GetChar();
 
 /*Get a String of lenght size on the standard input (stdin) and write the char in ptr s
 */
-void GetString(char * s, int size);
+void GetString(char* s, int size);
 
 #endif // IN_USER_MODE
 

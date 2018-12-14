@@ -86,30 +86,27 @@ ConsoleTest (char *in, char *out)
 
     for (;;)
       {
-      readAvail->P ();	// wait for character to arrive
-      ch = console->GetChar ();
-
-      if (ch == 'q' || ch == EOF) { //Bug lorsqu'on envoie EOF directement après une chaine de caratères
+	  readAvail->P ();	// wait for character to arrive
+	  ch = console->GetChar ();
+	  if (ch == 'q' || ch == EOF)
 	      return;		// if q, quit
+      if (ch != '\n') {
+        console->PutChar ('<');
+        writeDone->P ();	// wait for write to finish
+
+	    console->PutChar (ch);	// echo it!
+        writeDone->P ();	// wait for write to finish
+
+        console->PutChar ('>');
+        writeDone->P ();	// wait for write to finish
+        
       } else {
-
-          if (ch != '\n') {
-            console->PutChar ('<');
-            writeDone->P ();	// wait for write to finish
-
-            console->PutChar (ch);	// echo it!
-            writeDone->P ();	// wait for write to finish
-
-            console->PutChar ('>');
-            writeDone->P ();	// wait for write to finish
-
-          } else {
-            console->PutChar (ch);
-            writeDone->P ();	// wait for write to finish
-          }
+          console->PutChar (ch);
+          writeDone->P ();	// wait for write to finish
       }
-    }
+
 	  
+      }
 }
 
 #ifdef CHANGED

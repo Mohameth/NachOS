@@ -86,22 +86,29 @@ ConsoleTest (char *in, char *out)
 
     for (;;)
       {
-	  readAvail->P ();	// wait for character to arrive
-	  ch = console->GetChar ();
-      
-      if (ch != '\n') {
-        console->PutChar ('<');
-	    writeDone->P ();	// wait for write to finish
-      }
-	  console->PutChar (ch);	// echo it!
-	  writeDone->P ();	// wait for write to finish
-      if (ch != '\n') {
-        console->PutChar ('>');
-	    writeDone->P ();	// wait for write to finish
-      }
-      if (ch == 'q' || ch == EOF)
+      readAvail->P ();	// wait for character to arrive
+      ch = console->GetChar ();
+
+      if (ch == 'q' || ch == EOF) {
 	      return;		// if q, quit
+      } else {
+
+          if (ch != '\n') {
+            console->PutChar ('<');
+            writeDone->P ();	// wait for write to finish
+
+            console->PutChar (ch);	// echo it!
+            writeDone->P ();	// wait for write to finish
+
+            console->PutChar ('>');
+            writeDone->P ();	// wait for write to finish
+            
+          } else {
+            console->PutChar (ch);
+            writeDone->P ();	// wait for write to finish
+          }
       }
+    }
 	  
 }
 

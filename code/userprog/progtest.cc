@@ -89,7 +89,7 @@ ConsoleTest (char *in, char *out)
       readAvail->P ();	// wait for character to arrive
       ch = console->GetChar ();
 
-      if (ch == 'q' || ch == EOF) {
+      if (ch == 'q' || ch == EOF) { //Bug lorsqu'on envoie EOF directement après une chaine de caratères
 	      return;		// if q, quit
       } else {
 
@@ -102,7 +102,7 @@ ConsoleTest (char *in, char *out)
 
             console->PutChar ('>');
             writeDone->P ();	// wait for write to finish
-            
+
           } else {
             console->PutChar (ch);
             writeDone->P ();	// wait for write to finish

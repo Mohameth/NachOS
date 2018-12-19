@@ -35,6 +35,9 @@
 #define SC_GetString 14
 #define SC_PutInt    15
 #define SC_GetInt    16
+#define SC_UserThreadCreate 17
+#define SC_UserThreadExit   18
+
 
 #ifdef IN_USER_MODE
 
@@ -158,6 +161,14 @@ void PutInt(int n);
 */
 int GetInt();
 
+/* Create a new user thread, it start with the function f and the parameters arg
+*  Return -1 if the thread is not created (error)
+*/
+int UserThreadCreate(void f(void* arg),void *arg);
+
+/* destroy a user thread. The thread who call this function is destroy
+*/
+void UserThreadExit();
 
 #endif // IN_USER_MODE
 

@@ -4,7 +4,7 @@ void f(void * arg) {
     //PutChar('c');
     int * v = (int *) arg;
     PutInt(*v);
-    while(1);
+    UserThreadExit();
 }
 
 int main()

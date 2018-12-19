@@ -30,3 +30,9 @@ int do_UserThreadCreate(int f, int arg) {
     return 0;
 }
 
+void do_UserThreadExit() {
+    currentThread->Finish();
+    delete currentThread->space;
+    delete currentThread;
+}
+

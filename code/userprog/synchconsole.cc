@@ -7,7 +7,8 @@
 
 static Semaphore *readAvial;
 static Semaphore *writeDone;
-static Semaphore *getStringSem; // basicly it's a mutex 
+static Semaphore *getStringSem; // basicly it's a mutex, it take for a Get String operation 
+static Semaphore *putBusy; // basicly it's a mutex, it take for a PutChar operation, for protect multithreading access to console (2 write request at same time make an error)
 
 static void ReadAvial(int arg) { readAvial->V(); }
 static void WriteDone(int arg) { writeDone->V(); }
@@ -16,13 +17,15 @@ SynchConsole::SynchConsole(char *readFile, char *writeFile)
 {
     readAvial = new Semaphore("read avial", 0);
     writeDone = new Semaphore("write done", 0);
-    getStringSem = new Semaphore("get string",1); 
+    getStringSem = new Semaphore("get string",1);
+    putBusy = new Semaphore("put busy",1); 
     console = new Console(readFile, writeFile, ReadAvial, WriteDone, 0);
 }
 
 SynchConsole::~SynchConsole()
 {
     delete console;
+    delete putBusy;
     delete getStringSem;
     delete writeDone;
     delete readAvial;
@@ -30,8 +33,10 @@ SynchConsole::~SynchConsole()
 
 void SynchConsole::SynchPutChar(const char ch)
 {
+    putBusy->P(); // critical section 1 thread addmited
     console->PutChar(ch);
     writeDone->P(); // wait for the write to be done
+    putBusy->V();
 }
 
 char SynchConsole::SynchGetChar()

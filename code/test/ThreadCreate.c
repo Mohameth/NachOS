@@ -3,9 +3,9 @@
 void f(void * arg) {
     PutChar('c');
     PutChar('\n');
-    int * v = (int *) arg;
+    //int * v = (int *) arg;
     int i = 32;
-    PutInt(*v);
+    PutInt((int) arg);
     PutChar('\n');
     PutInt(i);
     PutChar('\n');

@@ -13,7 +13,9 @@ static void StartUserThread(int f) {
     machine->WriteRegister(PCReg,a->fonction);
     machine->WriteRegister(NextPCReg,a->fonction+4);
     
-    machine->WriteRegister(4,a->arg);
+    int val = 0;
+    machine->ReadMem(a->arg,4,&val); // temp TODO : trouver un moyen de passer l'argument sous forme de pointeur c
+    machine->WriteRegister(4,val);
     machine->Run();
 }
 

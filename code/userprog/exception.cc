@@ -107,7 +107,7 @@ ExceptionHandler (ExceptionType which) {
         int saddr =  machine->ReadRegister (4);
         //int size =  machine->ReadRegister (5);
         char s[MAX_STRING_SIZE];
-        synchconsole->copyStringFromMachine(saddr,s,MAX_STRING_SIZE);
+        synchconsole->copyStringFromMachine(saddr,s,MAX_STRING_SIZE-1);
         synchconsole->SynchPutString(s);
         break;
       }

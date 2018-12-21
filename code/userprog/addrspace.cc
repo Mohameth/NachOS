@@ -22,6 +22,26 @@
 
 #include <strings.h>		/* for bzero */
 
+
+
+void
+ReadAtVirtual (OpenFile * executable, int virtualaddr, int numBytes, int position, TranslationEntry *pageTable, unsigned int numPages) {
+
+    ASSERT((unsigned int) numBytes < numPages*PageSize);
+
+    int currentByte = 0;
+    int vAddr = virtualaddr;
+    char buff[numBytes];
+    machine->pageTable = pageTable;
+    machine->pageTableSize = numPages;
+    executable->ReadAt (buff,numBytes,position);
+    while (numBytes - currentByte > 0) {
+        machine->WriteMem(vAddr, 1, (int) buff[currentByte]);
+        currentByte++;
+        vAddr++;
+    }
+}
+
 //----------------------------------------------------------------------
 // SwapHeader
 //      Do little endian to big endian conversion on the bytes in the 
@@ -89,7 +109,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
     for (i = 0; i < numPages; i++)
       {
 	  pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
-	  pageTable[i].physicalPage = i;
+	  pageTable[i].physicalPage = i+1;
 	  pageTable[i].valid = TRUE;
 	  pageTable[i].use = FALSE;
 	  pageTable[i].dirty = FALSE;
@@ -107,17 +127,19 @@ AddrSpace::AddrSpace (OpenFile * executable)
       {
 	  DEBUG ('a', "Initializing code segment, at 0x%x, size %d\n",
 		 noffH.code.virtualAddr, noffH.code.size);
-	  executable->ReadAt (&(machine->mainMemory[noffH.code.virtualAddr]),
-			      noffH.code.size, noffH.code.inFileAddr);
+      ReadAtVirtual(executable, noffH.code.virtualAddr, noffH.code.size, noffH.code.inFileAddr, pageTable, numPages);
+	//   executable->ReadAt (&(machine->mainMemory[noffH.code.virtualAddr]),
+			    //   noffH.code.size, noffH.code.inFileAddr);
       }
     if (noffH.initData.size > 0)
       {
 	  DEBUG ('a', "Initializing data segment, at 0x%x, size %d\n",
 		 noffH.initData.virtualAddr, noffH.initData.size);
-	  executable->ReadAt (&
-			      (machine->mainMemory
-			       [noffH.initData.virtualAddr]),
-			      noffH.initData.size, noffH.initData.inFileAddr);
+      ReadAtVirtual(executable, noffH.initData.virtualAddr, noffH.initData.size, noffH.initData.inFileAddr, pageTable, numPages);
+	//   executable->ReadAt (&
+	// 		      (machine->mainMemory
+	// 		       [noffH.initData.virtualAddr]),
+	// 		      noffH.initData.size, noffH.initData.inFileAddr);
       }
 
 }

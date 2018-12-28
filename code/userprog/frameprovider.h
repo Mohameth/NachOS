@@ -6,6 +6,9 @@
 #include "copyright.h"
 #include "utility.h"
 #include "bitmap.h"
+#include "synch.h"
+#include <strings.h>		/* for bzero */
+
 
 class FrameProvider {
     public:
@@ -15,7 +18,7 @@ class FrameProvider {
 
         TranslationEntry * GetEmptyFrame();
 
-        void ReleaseFrame(TranslationEntry * pageTable);
+        void ReleaseFrame(TranslationEntry * virtualPage);
 
         int NumAvailFrame();
     private:

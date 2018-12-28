@@ -48,7 +48,7 @@ FrameProvider::NumAvailFrame() {
     mutex->P();
     int numAvail = 0;
     for (int i = 0; i < numPages; i++) {
-        if (frameBitMap->Test(i))
+        if (!frameBitMap->Test(i))
             numAvail++;
     }
     return numAvail;

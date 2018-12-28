@@ -4,16 +4,10 @@
 #include "system.h"
 #include "frameprovider.h"
 
-FrameProvider::FrameProvider(int numPage, TranslationEntry * entry) {
+FrameProvider::FrameProvider(int numPage) {
     this->frameBitMap = new BitMap(numPage);
     this->mutex = new Semaphore("FrameProvider mutex", 1);
-    this->entries = entry;
     this->numPages = numPage;
-
-    for (int i = 0; i < numPages; i++) {
-        if (entries[i].valid)
-            frameBitMap->Mark(i);
-    }
 }
 
 FrameProvider::~FrameProvider() {
@@ -21,32 +15,30 @@ FrameProvider::~FrameProvider() {
     delete this->mutex;  
 }
 
-TranslationEntry *
-FrameProvider::GetEmptyFrame() { //On doit peut-être modifier la page à retourner pour signifier qu'elle est maintenant utiisée ?
+unsigned int
+FrameProvider::GetEmptyFrame() {
     mutex->P();
-    int freeFrame = frameBitMap->Find();
-    TranslationEntry * freeEntry = &entries[freeFrame];
-    bzero((void *) freeEntry->physicalPage, PageSize);
+    int freeFrameNum = frameBitMap->Find();
+    unsigned int physicalFrame = (unsigned int) freeFrameNum;
+
+    int physAddr = physicalFrame * PageSize;
+    bzero(&machine->mainMemory[physAddr], PageSize);
     mutex->V();
-    return freeEntry;
+    return physicalFrame;
     
 }
 
 
 void
-FrameProvider::ReleaseFrame(TranslationEntry * virtualPage) { //On doit peut-être modifier la page à retourner pour signifier qu'elle est maintenant libre ?
+FrameProvider::ReleaseFrame(unsigned int physicalFrame) {
     mutex->P();
 
-    int i = 0;
-    while(i < numPages && entries[i].virtualPage != virtualPage->virtualPage) {
-        i++;
-    }
-    
-    if (i == numPages) {
-        printf("This page does not exist : %x", virtualPage->virtualPage);
+    if (physicalFrame < 0 || physicalFrame > (unsigned int) this->numPages) {
+        printf("This page does not exist : %ud", physicalFrame);
+        exit(-1);
     }
 
-    frameBitMap->Clear(i);
+    frameBitMap->Clear(physicalFrame);
 
     mutex->V();
 }

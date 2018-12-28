@@ -12,19 +12,18 @@
 
 class FrameProvider {
     public:
-        FrameProvider(int numPage, TranslationEntry * entries);
+        FrameProvider(int numPage);
         
         ~FrameProvider();        //clean up
 
-        TranslationEntry * GetEmptyFrame();
+        unsigned int GetEmptyFrame();
 
-        void ReleaseFrame(TranslationEntry * virtualPage);
+        void ReleaseFrame(unsigned int physicalFrame);
 
         int NumAvailFrame();
     private:
         Semaphore * mutex;
         BitMap * frameBitMap;
-        TranslationEntry * entries;
         int numPages;
 
 };

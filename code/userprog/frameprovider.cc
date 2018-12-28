@@ -18,13 +18,15 @@ FrameProvider::~FrameProvider() {
 unsigned int
 FrameProvider::GetEmptyFrame() {
     mutex->P();
-    int freeFrameNum = frameBitMap->Find();
-    unsigned int physicalFrame = (unsigned int) freeFrameNum;
-
-    int physAddr = physicalFrame * PageSize;
+    int randomN ;
+    do {
+        randomN =  Random() % this->numPages;
+    } while (frameBitMap->Test(randomN));
+    frameBitMap->Mark(randomN);
+    int physAddr = (unsigned int) randomN * PageSize;
     bzero(&machine->mainMemory[physAddr], PageSize);
     mutex->V();
-    return physicalFrame;
+    return randomN;
     
 }
 
@@ -48,7 +50,7 @@ FrameProvider::NumAvailFrame() {
     mutex->P();
     int numAvail = 0;
     for (int i = 0; i < numPages; i++) {
-        if (frameBitMap->Test(i))
+        if (!frameBitMap->Test(i))
             numAvail++;
     }
     return numAvail;

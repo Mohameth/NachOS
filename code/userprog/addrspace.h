@@ -15,6 +15,7 @@
 
 #include "copyright.h"
 #include "filesys.h"
+#include "bitmap.h"
 
 #define UserStackSize		1024	// increase this as necessary!
 
@@ -32,11 +33,15 @@ class AddrSpace
     void SaveState ();		// Save/restore address space-specific
     void RestoreState ();	// info on a context switch 
 
+    int GetSPnewThread(); // get the SP of a new user thread created. -1 if not possible
+    void ClearSPThread(int SP); // clear (Mark as free) the 3 pages identify by the addr SP
+
   private:
       TranslationEntry * pageTable;	// Assume linear page table translation
     // for now!
     unsigned int numPages;	// Number of pages in the virtual 
     // address space
+    BitMap * stackBitMap; // bitMap for the userstack, now the group of 3 page use by user thread. at the beginning the last 3 page are use by the main thread.
 };
 
 #endif // ADDRSPACE_H

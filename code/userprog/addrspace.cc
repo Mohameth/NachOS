@@ -142,6 +142,9 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	// 		      noffH.initData.size, noffH.initData.inFileAddr);
       }
 
+    this->stackBitMap = new BitMap( (UserStackSize/PageSize) /3);
+    this->stackBitMap->Mark(0); // 3 pages for the main thread; already use.
+
 }
 
 //----------------------------------------------------------------------
@@ -151,6 +154,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
 
 AddrSpace::~AddrSpace ()
 {
+  delete stackBitMap;
   // LB: Missing [] for delete
   // delete pageTable;
   delete [] pageTable;
@@ -216,4 +220,24 @@ AddrSpace::RestoreState ()
 {
     machine->pageTable = pageTable;
     machine->pageTableSize = numPages;
+}
+
+int AddrSpace::GetSPnewThread() {
+    int numPageSP = stackBitMap->Find();
+    if (numPageSP == -1)
+        return -1;
+    else {
+        stackBitMap->Mark(numPageSP);
+        int SPMain = numPages * PageSize - 16;
+        int SP = SPMain - (3*numPageSP*PageSize);
+        printf("alloc N° %d pour SP %d",numPageSP,SP);
+        return SP;
+    }
+}
+
+void AddrSpace::ClearSPThread(int SP) {
+    int SPMain = numPages * PageSize - 16;
+    int numPageSP = (( (SPMain - SP) /3)/PageSize);
+    printf("clear N° %d pour SP %d",numPageSP,SP);
+    stackBitMap->Clear(numPageSP);
 }

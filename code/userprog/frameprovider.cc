@@ -34,8 +34,9 @@ FrameProvider::GetEmptyFrame() { //On doit peut-être modifier la page à retour
 
 
 void
-FrameProvider::ReleaseFrame(TranslationEntry * virtualPage) {
+FrameProvider::ReleaseFrame(TranslationEntry * virtualPage) { //On doit peut-être modifier la page à retourner pour signifier qu'elle est maintenant libre ?
     mutex->P();
+
     int i = 0;
     while(i < numPages && entries[i].virtualPage != virtualPage->virtualPage) {
         i++;

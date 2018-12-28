@@ -52,7 +52,9 @@ extern PostOffice *postOffice;
 #ifdef CHANGED
 #ifdef USER_PROGRAM
 #include "synchconsole.h"
+#include "frameprovider.h"
 extern SynchConsole * synchconsole;
+extern FrameProvider *frameProvider; // main memory management 
 #define MAX_STRING_SIZE 50
 #endif
 #endif

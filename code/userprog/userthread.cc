@@ -2,11 +2,11 @@
 #include "system.h"
 #include "userthread.h"
 
-int sps[( (UserStackSize/PageSize) /3 )]; // +1 is not nessecary because the main thread is the number 0
+int sps[divRoundUp(UserStackSize,PageSize*3)-1]; // +1 is not nessecary because the main thread is the number 0
 
-Semaphore * sems[( (UserStackSize/PageSize) /3 )];
+Semaphore * sems[divRoundUp(UserStackSize,PageSize*3)-1];
 
-int compteurTID = 0;
+int compteurTID =0;
 
 static void StartUserThread(int f) {
     DEBUG('a', "Start user thread\n");
@@ -17,9 +17,7 @@ static void StartUserThread(int f) {
     machine->WriteRegister(PCReg,a->fonction);
     machine->WriteRegister(NextPCReg,a->fonction+4);
     machine->WriteRegister(StackReg,sps[currentThread->getTid()]);
-    
-    //int val = 0;
-    //machine->ReadMem(a->arg,4,&val); // temp TODO : trouver un moyen de passer l'argument sous forme de pointeur c
+
     machine->WriteRegister(4,a->arg);
     machine->Run();
 }
@@ -38,11 +36,10 @@ int do_UserThreadCreate(int f, int arg) {
     if (newThread == 0) {
         return -1;
     }
-    newThread->setTid(compteurTID);
-    compteurTID++;
+    newThread->setTid(compteurTID++);
     sps[newThread->getTid()] = newSP;
     sems[newThread->getTid()] = new Semaphore("sem Thread",0);
-    newThread->space = currentThread->space;
+    
     newThread->Fork(StartUserThread,(int) a);
     return newThread->getTid();
 }
@@ -54,9 +51,5 @@ void do_UserThreadExit() {
 }
 
 void do_UserThreadJoin(int tid) {
-    Semaphore * s = sems[tid];
-    if (s != NULL) {
-        s->P(); // wait the thread to do V on his semaphore
-        s->V(); // do V for the other call to userThreadJoin with the same tid.
-    }
+    sems[tid]->P();
 }

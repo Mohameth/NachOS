@@ -143,7 +143,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	// 		      noffH.initData.size, noffH.initData.inFileAddr);
       }
 
-    this->stackBitMap = new BitMap( (UserStackSize/PageSize) /3);
+    this->stackBitMap = new BitMap(divRoundUp(UserStackSize,PageSize*3));
     this->stackBitMap->Mark(0); // 3 pages for the main thread; already use.
 
 }
@@ -228,7 +228,6 @@ int AddrSpace::GetSPnewThread() {
     if (numPageSP == -1)
         return -1;
     else {
-        stackBitMap->Mark(numPageSP);
         int SPMain = numPages * PageSize - 16;
         int SP = SPMain - (3*numPageSP*PageSize);
         printf("alloc N° %d pour SP %d",numPageSP,SP);

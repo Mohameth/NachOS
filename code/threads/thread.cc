@@ -45,6 +45,8 @@ Thread::Thread (const char *threadName)
     // user threads.
     for (int r=NumGPRegs; r<NumTotalRegs; r++)
       userRegisters[r] = 0;
+
+    tid = 0;
 #endif
 }
 
@@ -372,6 +374,14 @@ Thread::StackAllocate (VoidFunctionPtr func, int arg)
     machineState[InitialPCState] = (int) func;
     machineState[InitialArgState] = arg;
     machineState[WhenDonePCState] = (int) ThreadFinish;
+}
+
+void Thread::setTid(int tids) {
+    tid = tids;
+}
+
+int Thread::getTid() {
+    return tid;
 }
 
 #ifdef USER_PROGRAM

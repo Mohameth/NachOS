@@ -15,12 +15,10 @@ void f(void * arg) {
 int main()
 {
     int arg = 320;
-    UserThreadCreate(f,&arg);
+    int tid = UserThreadCreate(f,&arg);
     PutChar('m');
     PutChar('\n');
-    int i = 0;
-    while(i < 100000) {
-        i++;
-    }
+    PutInt(tid);
+    UserThreadJoin(tid);
     return 0;
 }

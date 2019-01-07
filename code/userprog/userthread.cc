@@ -9,6 +9,8 @@ using namespace std;
 
 //Semaphore * sems[divRoundUp(UserStackSize,PageSize*3)-1];
 
+
+//Hashmap reliant le tid du thread a la structure contenant les informations du thread
 map<int,ThreadInfo> infos;
 
 int compteurTID =0;
@@ -30,17 +32,17 @@ static void StartUserThread(int f) {
     machine->WriteRegister(4,a->arg);
     mutex->V();
 
-    machine->Run();
+    machine->Run(); //execute la fonction dans PCREG
 }
 
 int do_UserThreadCreate(int f, int arg) {
     mutex->P(); // critical section start
 
-    args* a = new args;
+    args* a = new args; //contient les arguments: fonction à exectuer et arguments de cette fonction pour le thread
     a->fonction = f;
     a->arg = arg;
     int newSP = currentThread->space->GetSPnewThread();
-    if (newSP == -1) {
+    if (newSP == -1) { //création impossible pas assez de mémoire
         mutex->V();
         return -1;
     }
@@ -51,17 +53,17 @@ int do_UserThreadCreate(int f, int arg) {
         mutex->V();
         return -1;
     }
-    newThread->setTid(compteurTID++);
+    newThread->setTid(compteurTID++); //id du thread crée
     ThreadInfo t;
     t.sp = newSP;
     t.s = new Semaphore("sem Thread",0);
-    infos.insert(pair<int,ThreadInfo>(newThread->getTid(),t));
+    infos.insert(pair<int,ThreadInfo>(newThread->getTid(),t)); //ajout dans la hashmap les données
     // sps[newThread->getTid()] = newSP;
     // sems[newThread->getTid()] = new Semaphore("sem Thread",0);
     
     mutex->V();
 
-    newThread->Fork(StartUserThread,(int) a);
+    newThread->Fork(StartUserThread,(int) a);  //execute StartUserThread
     return newThread->getTid();
 }
 

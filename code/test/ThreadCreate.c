@@ -1,23 +1,23 @@
 #include "syscall.h"
 
 void f(void * arg) {
-    PutChar('c');
-    PutChar('\n');
-    //int * v = (int *) arg;
-    int i = 32;
-    PutInt((int) arg);
-    PutChar('\n');
-    PutInt(i);
+    int * v = (int *) arg;
+    PutInt(*v);
     PutChar('\n');
     UserThreadExit();
 }
 
 int main()
 {
-    int arg = 320;
-    UserThreadCreate(f,&arg);
-    PutChar('m');
+    int arg =320;
+    int arg2=420;
+    int tid = UserThreadCreate(f,&arg);
+    tid = UserThreadCreate(f,&arg2);
     PutChar('\n');
-    while(1);
-    Halt();
+
+    for(int i=0;i<=tid;i++){
+        UserThreadJoin(i);
+    }
+    
+    return 0;
 }

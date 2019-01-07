@@ -87,6 +87,8 @@ class Lock
 
   private:
     const char *name;		// for debugging
+    Semaphore *sem;
+    Thread *t;
     // plus some other stuff you'll need to define
 };
 
@@ -143,6 +145,8 @@ class Condition
 
   private:
     const char *name;
+    Semaphore *sem;
+    int nbThread;
     // plus some other stuff you'll need to define
 };
 #endif // SYNCH_H

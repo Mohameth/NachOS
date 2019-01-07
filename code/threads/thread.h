@@ -124,7 +124,7 @@ class Thread
 
     void StackAllocate (VoidFunctionPtr func, int arg);
     // Allocate a stack for thread.
-    // Used internally by Fork()
+    // Used internally by Fork()  
 
 #ifdef USER_PROGRAM
 // A thread running a user program actually has *two* sets of CPU registers -- 
@@ -132,10 +132,13 @@ class Thread
 // while executing kernel code.
 
     int userRegisters[NumTotalRegs];	// user-level CPU register state
+    int tid;
 
   public:
     void SaveUserState ();	// save user-level register state
     void RestoreUserState ();	// restore user-level register state
+    void setTid(int tid);
+    int getTid();
 
     AddrSpace *space;		// User code this thread is running.
 #endif

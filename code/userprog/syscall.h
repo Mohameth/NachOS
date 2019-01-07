@@ -37,7 +37,8 @@
 #define SC_GetInt    16
 #define SC_UserThreadCreate 17
 #define SC_UserThreadExit   18
-#define SC_ForkExec 19
+#define SC_UserThreadJoin 19
+#define SC_ForkExec 20
 
 
 #ifdef IN_USER_MODE
@@ -171,9 +172,15 @@ int UserThreadCreate(void f(void* arg),void *arg);
 */
 void UserThreadExit();
 
+<<<<<<< HEAD
 /* Create a new nachos thread executing a c program
 */
 void ForkExec(char * exec);
+=======
+/* wait the thread with the tid tid to finish
+*/
+void UserThreadJoin(int tid);
+>>>>>>> c1ba26ffdca6cefa1156afd97855a76591c4408c
 
 #endif // IN_USER_MODE
 

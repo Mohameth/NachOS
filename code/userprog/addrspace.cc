@@ -151,6 +151,9 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	// 		      noffH.initData.size, noffH.initData.inFileAddr);
       }
 
+    this->stackBitMap = new BitMap(divRoundUp(UserStackSize,PageSize*3));
+    this->stackBitMap->Mark(0); // 3 pages for the main thread; already use.
+
 }
 
 //----------------------------------------------------------------------
@@ -160,6 +163,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
 
 AddrSpace::~AddrSpace ()
 {
+  delete stackBitMap;
   // LB: Missing [] for delete
   // delete pageTable;
   delete [] pageTable;
@@ -225,4 +229,22 @@ AddrSpace::RestoreState ()
 {
     machine->pageTable = pageTable;
     machine->pageTableSize = numPages;
+}
+
+int AddrSpace::GetSPnewThread() {
+    int numPageSP = stackBitMap->Find(); //recherche 3 pages libre dans la pile et le marque "1" si trouve un groupe de 3 pages libre
+    if (numPageSP == -1)  //pas de groupe de 3 pages libre
+        return -1; //création impossible du thread
+    else {
+        int SPMain = numPages * PageSize - 16;  //stack pointeur du thread principal
+        int SP = SPMain - (3*numPageSP*PageSize); //stack pointeur du thread en cours de création
+        return SP;
+    }
+}
+
+
+void AddrSpace::ClearSPThread(int SP) {
+    int SPMain = numPages * PageSize - 16;
+    int numPageSP = (( (SPMain - SP) /3)/PageSize); //retrouve le numéro du groupe de 3 pages, a partir du stack pointeur associé au thread
+    stackBitMap->Clear(numPageSP);
 }

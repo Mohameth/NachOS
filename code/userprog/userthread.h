@@ -10,6 +10,11 @@ typedef struct {
     int arg;
 } args;
 
+typedef struct {
+    int sp;
+    Semaphore * s;
+} ThreadInfo;
+
 extern int do_UserThreadCreate(int f, int arg);
 
 extern void do_UserThreadExit();

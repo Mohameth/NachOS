@@ -1,10 +1,15 @@
 #include "thread.h"
 #include "system.h"
 #include "userthread.h"
+#include <vector> 
+  
+using namespace std; 
 
-int sps[divRoundUp(UserStackSize,PageSize*3)-1]; // +1 is not nessecary because the main thread is the number 0
+//int sps[divRoundUp(UserStackSize,PageSize*3)-1]; // +1 is not nessecary because the main thread is the number 0
 
-Semaphore * sems[divRoundUp(UserStackSize,PageSize*3)-1];
+//Semaphore * sems[divRoundUp(UserStackSize,PageSize*3)-1];
+
+vector<ThreadInfo> infos;
 
 int compteurTID =0;
 
@@ -20,7 +25,7 @@ static void StartUserThread(int f) {
     currentThread->space->RestoreState();
     machine->WriteRegister(PCReg,a->fonction);
     machine->WriteRegister(NextPCReg,a->fonction+4);
-    machine->WriteRegister(StackReg,sps[currentThread->getTid()]);
+    machine->WriteRegister(StackReg,infos.at(currentThread->getTid()).sp );
 
     machine->WriteRegister(4,a->arg);
     mutex->V();
@@ -47,8 +52,12 @@ int do_UserThreadCreate(int f, int arg) {
         return -1;
     }
     newThread->setTid(compteurTID++);
-    sps[newThread->getTid()] = newSP;
-    sems[newThread->getTid()] = new Semaphore("sem Thread",0);
+    ThreadInfo t;
+    t.sp = newSP;
+    t.s = new Semaphore("sem Thread",0);
+    infos.push_back(t);
+    // sps[newThread->getTid()] = newSP;
+    // sems[newThread->getTid()] = new Semaphore("sem Thread",0);
     
     mutex->V();
 
@@ -57,12 +66,13 @@ int do_UserThreadCreate(int f, int arg) {
 }
 
 void do_UserThreadExit() {
-    currentThread->space->ClearSPThread(sps[currentThread->getTid()]);
-    sems[currentThread->getTid()]->V();
+    currentThread->space->ClearSPThread(infos.at(currentThread->getTid()).sp);
+    //sems[currentThread->getTid()]->V();
+    infos.at(currentThread->getTid()).s->V();
     currentThread->Finish();
 }
 
 void do_UserThreadJoin(int tid) {
-    sems[tid]->P();
-    sems[tid]->V();
+    infos.at(tid).s->P();
+    infos.at(tid).s->V();
 }

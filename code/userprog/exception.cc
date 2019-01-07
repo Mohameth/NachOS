@@ -41,6 +41,30 @@ UpdatePC ()
     machine->WriteRegister (NextPCReg, pc);
 }
 
+void
+do_ForkExec (char *filename)
+{
+    OpenFile *executable = fileSystem->Open (filename);
+    AddrSpace *space;
+
+    if (executable == NULL)
+      {
+	  printf ("Unable to open file %s\n", filename);
+	  return;
+      }
+    Thread * t = new Thread("forkexec");
+    space = new AddrSpace (executable);
+    t->space = space;
+
+    delete executable;		// close file
+
+    t->space->InitRegisters ();	// set the initial register values
+    // t->space->RestoreState ();	// load page table register
+    scheduler->ReadyToRun(t);
+    // the address space exits
+    // by doing the syscall "exit"
+    printf("Fork done !\n");
+}
 
 //----------------------------------------------------------------------
 // ExceptionHandler
@@ -141,6 +165,14 @@ ExceptionHandler (ExceptionType which) {
       case SC_GetInt: {
         int val = synchconsole->SynchGetInt();
         machine->WriteRegister(2,val);
+        break;
+      }
+
+      case SC_ForkExec: {
+        int saddr =  machine->ReadRegister (4);
+        char s[MAX_STRING_SIZE];
+        synchconsole->copyStringFromMachine(saddr,s,MAX_STRING_SIZE-1);
+        do_ForkExec(s);
         break;
       }
 

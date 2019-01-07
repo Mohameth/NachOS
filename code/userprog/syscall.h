@@ -37,6 +37,7 @@
 #define SC_GetInt    16
 #define SC_UserThreadCreate 17
 #define SC_UserThreadExit   18
+#define SC_ForkExec 19
 
 
 #ifdef IN_USER_MODE
@@ -169,6 +170,10 @@ int UserThreadCreate(void f(void* arg),void *arg);
 /* destroy a user thread. The thread who call this function is destroy
 */
 void UserThreadExit();
+
+/* Create a new nachos thread executing a c program
+*/
+void ForkExec(char * exec);
 
 #endif // IN_USER_MODE
 

@@ -29,6 +29,9 @@ ReadAtVirtual (OpenFile * executable, int virtualaddr, int numBytes, int positio
 
     ASSERT((unsigned int) numBytes < numPages*PageSize);
 
+    TranslationEntry * backPageTable = machine->pageTable;
+    unsigned int backNumPages = machine->pageTableSize;
+
     int currentByte = 0;
     int vAddr = virtualaddr;
     char buff[numBytes];
@@ -39,6 +42,10 @@ ReadAtVirtual (OpenFile * executable, int virtualaddr, int numBytes, int positio
         machine->WriteMem(vAddr, 1, (int) buff[currentByte]);
         currentByte++;
         vAddr++;
+    }
+    if (backPageTable != NULL && backNumPages) {
+        machine->pageTable = backPageTable;
+        machine->pageTableSize = backNumPages;
     }
 }
 
@@ -118,7 +125,8 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	  // a separate page, we could set its 
 	  // pages to be read-only
       }
-
+    this->pageTable = pageTable;
+    this->numPages = numPages;
 // zero out the entire address space, to zero the unitialized data segment 
 // and the stack segment
     bzero (machine->mainMemory, size);

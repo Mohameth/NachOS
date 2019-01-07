@@ -1,12 +1,12 @@
 #include "syscall.h"
 
 void f2() {
-    PutString("courgette\n");
+    PutString("potimarron\n");
     UserThreadExit();
 }
 
 void f1() {
-    PutString("ANANAS\n");
+    PutString("TOPINAMBOUR\n");
     UserThreadExit();
 }
 

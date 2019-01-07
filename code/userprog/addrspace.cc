@@ -223,21 +223,21 @@ AddrSpace::RestoreState ()
     machine->pageTableSize = numPages;
 }
 
-int AddrSpace::GetSPnewThread() {
+int AddrSpace::GetNewThread() {
     int numPageSP = stackBitMap->Find();
     if (numPageSP == -1)
         return -1;
     else {
-        int SPMain = numPages * PageSize - 16;
-        int SP = SPMain - (3*numPageSP*PageSize);
-        //printf("alloc N° %d pour SP %d",numPageSP,SP);
-        return SP;
+        return numPageSP;
     }
 }
 
-void AddrSpace::ClearSPThread(int SP) {
+void AddrSpace::ClearThread(int numPage) {
+    stackBitMap->Clear(numPage);
+}
+
+int AddrSpace::GetSpWithBitMapNumPage(int numPage) {
     int SPMain = numPages * PageSize - 16;
-    int numPageSP = (( (SPMain - SP) /3)/PageSize);
-    //printf("clear N° %d pour SP %d",numPageSP,SP);
-    stackBitMap->Clear(numPageSP);
+    int SP = SPMain - (3*numPage*PageSize);
+    return SP;
 }

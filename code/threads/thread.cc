@@ -417,6 +417,14 @@ int Thread::getTid() {
     return tid;
 }
 
+void Thread::setNumPage(int num) {
+    numPage = num;
+}
+
+int Thread::getNumPage() {
+    return numPage;
+}
+
 #endif
 
 

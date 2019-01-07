@@ -133,12 +133,15 @@ class Thread
 
     int userRegisters[NumTotalRegs];	// user-level CPU register state
     int tid;
+    int numPage;
 
   public:
     void SaveUserState ();	// save user-level register state
     void RestoreUserState ();	// restore user-level register state
     void setTid(int tid);
     int getTid();
+    void setNumPage(int num);
+    int getNumPage();
 
     AddrSpace *space;		// User code this thread is running.
 #endif

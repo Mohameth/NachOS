@@ -33,8 +33,9 @@ class AddrSpace
     void SaveState ();		// Save/restore address space-specific
     void RestoreState ();	// info on a context switch 
 
-    int GetSPnewThread(); // get the SP of a new user thread created. -1 if not possible
-    void ClearSPThread(int SP); // clear (Mark as free) the 3 pages identify by the addr SP
+    int GetNewThread(); // get the num of the group of 3 Pages in the bitMap of a new user thread created. -1 if not possible
+    void ClearThread(int SP); // clear (Mark as free) the 3 pages identify by the num of the group of 3 Pages in the bitMap
+    int GetSpWithBitMapNumPage(int numPage); // return the SP of the thread with the num of the group of 3 Pages in the bitMap
 
   private:
       TranslationEntry * pageTable;	// Assume linear page table translation

@@ -5,6 +5,7 @@
 int sps[divRoundUp(UserStackSize,PageSize*3)-1]; // +1 is not nessecary because the main thread is the number 0
 
 Semaphore * sems[divRoundUp(UserStackSize,PageSize*3)-1];
+int numTid[divRoundUp(UserStackSize,PageSize*3)-1];
 
 int compteurTID =0;
 
@@ -20,7 +21,8 @@ static void StartUserThread(int f) {
     currentThread->space->RestoreState();
     machine->WriteRegister(PCReg,a->fonction);
     machine->WriteRegister(NextPCReg,a->fonction+4);
-    machine->WriteRegister(StackReg,sps[currentThread->getTid()]);
+    int SP = currentThread->space->GetSpWithBitMapNumPage( sps[currentThread->getTid()-1] );
+    machine->WriteRegister(StackReg,SP);
 
     machine->WriteRegister(4,a->arg);
     mutex->V();
@@ -34,8 +36,8 @@ int do_UserThreadCreate(int f, int arg) {
     args* a = new args;
     a->fonction = f;
     a->arg = arg;
-    int newSP = currentThread->space->GetSPnewThread();
-    if (newSP == -1) {
+    int numT = currentThread->space->GetNewThread();
+    if (numT == -1) {
         mutex->V();
         return -1;
     }
@@ -46,10 +48,12 @@ int do_UserThreadCreate(int f, int arg) {
         mutex->V();
         return -1;
     }
+    newThread->setNumPage(numT);
+    //compteurTID = (compteurTID+1)% ( divRoundUp(UserStackSize,PageSize*3)-1 );
     newThread->setTid(compteurTID++);
-    sps[newThread->getTid()] = newSP;
-    sems[newThread->getTid()] = new Semaphore("sem Thread",0);
-    
+    sps[newThread->getNumPage()-1] = numT;
+    sems[newThread->getNumPage()-1] = new Semaphore("sem Thread",0);
+    numTid[newThread->getNumPage()-1]=newThread->getTid();
     mutex->V();
 
     newThread->Fork(StartUserThread,(int) a);
@@ -57,12 +61,22 @@ int do_UserThreadCreate(int f, int arg) {
 }
 
 void do_UserThreadExit() {
-    currentThread->space->ClearSPThread(sps[currentThread->getTid()]);
-    sems[currentThread->getTid()]->V();
+    currentThread->space->ClearThread(sps[currentThread->getTid()-1]);
+    sems[currentThread->getTid()-1]->V();
     currentThread->Finish();
 }
 
 void do_UserThreadJoin(int tid) {
-    sems[tid]->P();
-    sems[tid]->V();
+    int i=0;
+
+    while(i<divRoundUp(UserStackSize,PageSize*3)-1 && numTid[i]!=tid){
+        i++;
+    }
+
+    if(i==divRoundUp(UserStackSize,PageSize*3)-1)
+    return;
+
+    sems[i]->P();
+    sems[i]->V();
+    
 }

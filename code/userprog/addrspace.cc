@@ -228,7 +228,6 @@ int AddrSpace::GetSPnewThread() {
     if (numPageSP == -1)
         return -1;
     else {
-        stackBitMap->Mark(numPageSP);
         int SPMain = numPages * PageSize - 16;
         int SP = SPMain - (3*numPageSP*PageSize);
         //printf("alloc N° %d pour SP %d",numPageSP,SP);

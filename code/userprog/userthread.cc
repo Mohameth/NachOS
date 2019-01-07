@@ -75,9 +75,10 @@ void do_UserThreadExit() {
 }
 
 void do_UserThreadJoin(int tid) {
-    if (infos.find(tid) == infos.end())
+    //gestion du cas ou on réalise un join sur un tid non valide ou d'un deuxième appel de threadjoin.
+    if (infos.find(tid) == infos.end()) //si les données du thread n'exite plus dans la hashmap, ne rien faire
         return;
-    infos.at(tid).s->P();
-    infos.erase(tid);
+    infos.at(tid).s->P(); //l'aquisition du sémaphore indique que le thread est terminé
+    infos.erase(tid); //supprime du hashmap les infos du thread (libèration de la mémoire)
 
 }

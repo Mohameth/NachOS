@@ -161,6 +161,7 @@ void
 Condition::Signal (Lock * conditionLock)
 {
     sem->V();
+    if(nbThread!=0)
     nbThread--;
 }
 void

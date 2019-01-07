@@ -5,11 +5,6 @@
 
 using namespace std;
 
-//int sps[divRoundUp(UserStackSize,PageSize*3)-1]; // +1 is not nessecary because the main thread is the number 0
-
-//Semaphore * sems[divRoundUp(UserStackSize,PageSize*3)-1];
-
-
 //Hashmap reliant le tid du thread a la structure contenant les informations du thread
 map<int,ThreadInfo> infos;
 
@@ -58,9 +53,7 @@ int do_UserThreadCreate(int f, int arg) {
     t.sp = newSP;
     t.s = new Semaphore("sem Thread",0);
     infos.insert(pair<int,ThreadInfo>(newThread->getTid(),t)); //ajout dans la hashmap les données
-    // sps[newThread->getTid()] = newSP;
-    // sems[newThread->getTid()] = new Semaphore("sem Thread",0);
-    
+   
     mutex->V();
 
     newThread->Fork(StartUserThread,(int) a);  //execute StartUserThread
@@ -69,7 +62,7 @@ int do_UserThreadCreate(int f, int arg) {
 
 void do_UserThreadExit() {
     currentThread->space->ClearSPThread(infos.at(currentThread->getTid()).sp);
-    //sems[currentThread->getTid()]->V();
+
     infos.at(currentThread->getTid()).s->V();
     currentThread->Finish();
 }

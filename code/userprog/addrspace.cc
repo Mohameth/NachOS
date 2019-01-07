@@ -230,7 +230,6 @@ int AddrSpace::GetSPnewThread() {
     else {
         int SPMain = numPages * PageSize - 16;  //stack pointeur du thread principal
         int SP = SPMain - (3*numPageSP*PageSize); //stack pointeur du thread en cours de création
-        //printf("alloc N° %d pour SP %d",numPageSP,SP);
         return SP;
     }
 }
@@ -239,6 +238,5 @@ int AddrSpace::GetSPnewThread() {
 void AddrSpace::ClearSPThread(int SP) {
     int SPMain = numPages * PageSize - 16;
     int numPageSP = (( (SPMain - SP) /3)/PageSize); //retrouve le numéro du groupe de 3 pages, a partir du stack pointeur associé au thread
-    //printf("clear N° %d pour SP %d",numPageSP,SP);
     stackBitMap->Clear(numPageSP);
 }

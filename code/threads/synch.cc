@@ -126,6 +126,7 @@ Lock::Release ()
     if(!isHeldByCurrentThread())
         return;
 
+    t=NULL;
     sem->V();    
 }
 
@@ -160,6 +161,7 @@ void
 Condition::Signal (Lock * conditionLock)
 {
     sem->V();
+    nbThread--;
 }
 void
 Condition::Broadcast (Lock * conditionLock)

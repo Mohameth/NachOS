@@ -124,7 +124,7 @@ void
 Lock::Release ()
 {
     if(!isHeldByCurrentThread())
-        return;
+        return; //erreur si unlock par un autre thread
 
     t=NULL;
     sem->V();    
@@ -153,15 +153,17 @@ Condition::Wait (Lock * conditionLock)
 {
     nbThread++;
     conditionLock->Release();
-    sem->P();
-    conditionLock->Acquire();
+    sem->P(); //mise en attente d'un signal
+    conditionLock->Acquire(); //reprend le verrou
 }
 
 void
 Condition::Signal (Lock * conditionLock)
 {
-    sem->V();
-    nbThread--;
+    if(nbThread!=0){
+        sem->V();
+        nbThread--;
+    }
 }
 void
 Condition::Broadcast (Lock * conditionLock)

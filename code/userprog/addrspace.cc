@@ -29,6 +29,9 @@ ReadAtVirtual (OpenFile * executable, int virtualaddr, int numBytes, int positio
 
     ASSERT((unsigned int) numBytes < numPages*PageSize);
 
+    TranslationEntry * backPageTable = machine->pageTable;
+    unsigned int backNumPages = machine->pageTableSize;
+
     int currentByte = 0;
     int vAddr = virtualaddr;
     char buff[numBytes];
@@ -39,6 +42,10 @@ ReadAtVirtual (OpenFile * executable, int virtualaddr, int numBytes, int positio
         machine->WriteMem(vAddr, 1, (int) buff[currentByte]);
         currentByte++;
         vAddr++;
+    }
+    if (backPageTable != NULL && backNumPages) {
+        machine->pageTable = backPageTable;
+        machine->pageTableSize = backNumPages;
     }
 }
 
@@ -118,7 +125,8 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	  // a separate page, we could set its 
 	  // pages to be read-only
       }
-
+    this->pageTable = pageTable;
+    this->numPages = numPages;
 // zero out the entire address space, to zero the unitialized data segment 
 // and the stack segment
     bzero (machine->mainMemory, size);
@@ -230,7 +238,6 @@ int AddrSpace::GetSPnewThread() {
     else {
         int SPMain = numPages * PageSize - 16;  //stack pointeur du thread principal
         int SP = SPMain - (3*numPageSP*PageSize); //stack pointeur du thread en cours de création
-        //printf("alloc N° %d pour SP %d",numPageSP,SP);
         return SP;
     }
 }
@@ -239,6 +246,5 @@ int AddrSpace::GetSPnewThread() {
 void AddrSpace::ClearSPThread(int SP) {
     int SPMain = numPages * PageSize - 16;
     int numPageSP = (( (SPMain - SP) /3)/PageSize); //retrouve le numéro du groupe de 3 pages, a partir du stack pointeur associé au thread
-    //printf("clear N° %d pour SP %d",numPageSP,SP);
     stackBitMap->Clear(numPageSP);
 }

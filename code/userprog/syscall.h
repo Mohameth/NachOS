@@ -172,15 +172,12 @@ int UserThreadCreate(void f(void* arg),void *arg);
 */
 void UserThreadExit();
 
-<<<<<<< HEAD
 /* Create a new nachos thread executing a c program
 */
 void ForkExec(char * exec);
-=======
 /* wait the thread with the tid tid to finish
 */
 void UserThreadJoin(int tid);
->>>>>>> c1ba26ffdca6cefa1156afd97855a76591c4408c
 
 #endif // IN_USER_MODE
 

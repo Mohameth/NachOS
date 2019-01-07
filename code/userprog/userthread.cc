@@ -81,3 +81,12 @@ void do_UserThreadJoin(int tid) {
     infos.erase(tid);
 
 }
+
+void attendreThread(){
+    mutex->P();
+    int compteur=compteurTID;
+    mutex->V();
+    for(int i=0;i<compteur;i++){
+        do_UserThreadJoin(i);
+    }
+}

@@ -86,15 +86,17 @@ ExceptionHandler (ExceptionType which) {
     switch(type) {
 
       case SC_Halt: {
+        attendreThread(); // attente des threads en cour d'execution
         DEBUG('a', "Shutdown, initiated by user program.\n");
         interrupt->Halt ();
         break;
       }
 
       case SC_Exit: {
+        attendreThread(); // attente des threads en cour d'execution
         DEBUG('a', "User Program terminate\n");
         printf("exit with status %d\n",machine->ReadRegister(3));
-        interrupt->Halt();
+        //interrupt->Halt();
         break;
       }
 

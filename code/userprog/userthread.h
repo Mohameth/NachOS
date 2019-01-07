@@ -22,4 +22,6 @@ extern void do_UserThreadExit();
 
 extern void do_UserThreadJoin(int tid);
 
+void attendreThread();
+
 #endif // USERTHREAD_H

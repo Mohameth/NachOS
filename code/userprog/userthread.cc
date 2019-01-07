@@ -8,7 +8,11 @@ Semaphore * sems[divRoundUp(UserStackSize,PageSize*3)-1];
 
 int compteurTID =0;
 
+Semaphore * mutex = new Semaphore("mutex",1);
+
 static void StartUserThread(int f) {
+    mutex->P();
+
     DEBUG('a', "Start user thread\n");
     args* a = (args*) f;
     
@@ -19,27 +23,35 @@ static void StartUserThread(int f) {
     machine->WriteRegister(StackReg,sps[currentThread->getTid()]);
 
     machine->WriteRegister(4,a->arg);
+    mutex->V();
+
     machine->Run();
 }
 
 int do_UserThreadCreate(int f, int arg) {
+    mutex->P(); // critical section start
+
     args* a = new args;
     a->fonction = f;
     a->arg = arg;
     int newSP = currentThread->space->GetSPnewThread();
     if (newSP == -1) {
+        mutex->V();
         return -1;
     }
 
     DEBUG('a', "Create user thread\n");
     Thread *newThread = new Thread("user thread");
     if (newThread == 0) {
+        mutex->V();
         return -1;
     }
     newThread->setTid(compteurTID++);
     sps[newThread->getTid()] = newSP;
     sems[newThread->getTid()] = new Semaphore("sem Thread",0);
     
+    mutex->V();
+
     newThread->Fork(StartUserThread,(int) a);
     return newThread->getTid();
 }
@@ -52,4 +64,5 @@ void do_UserThreadExit() {
 
 void do_UserThreadJoin(int tid) {
     sems[tid]->P();
+    sems[tid]->V();
 }

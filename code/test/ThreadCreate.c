@@ -17,6 +17,7 @@ int main()
 
     for(int i=0;i<=tid;i++){
         UserThreadJoin(i);
-    }  
+    }
+    
     return 0;
 }

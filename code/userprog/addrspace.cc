@@ -230,7 +230,7 @@ int AddrSpace::GetSPnewThread() {
     else {
         int SPMain = numPages * PageSize - 16;
         int SP = SPMain - (3*numPageSP*PageSize);
-        printf("alloc N° %d pour SP %d",numPageSP,SP);
+        //printf("alloc N° %d pour SP %d",numPageSP,SP);
         return SP;
     }
 }
@@ -238,6 +238,6 @@ int AddrSpace::GetSPnewThread() {
 void AddrSpace::ClearSPThread(int SP) {
     int SPMain = numPages * PageSize - 16;
     int numPageSP = (( (SPMain - SP) /3)/PageSize);
-    printf("clear N° %d pour SP %d",numPageSP,SP);
+    //printf("clear N° %d pour SP %d",numPageSP,SP);
     stackBitMap->Clear(numPageSP);
 }

@@ -1,15 +1,15 @@
 #include "thread.h"
 #include "system.h"
 #include "userthread.h"
-#include <vector> 
-  
-using namespace std; 
+#include <map>
+
+using namespace std;
 
 //int sps[divRoundUp(UserStackSize,PageSize*3)-1]; // +1 is not nessecary because the main thread is the number 0
 
 //Semaphore * sems[divRoundUp(UserStackSize,PageSize*3)-1];
 
-vector<ThreadInfo> infos;
+map<int,ThreadInfo> infos;
 
 int compteurTID =0;
 
@@ -55,7 +55,7 @@ int do_UserThreadCreate(int f, int arg) {
     ThreadInfo t;
     t.sp = newSP;
     t.s = new Semaphore("sem Thread",0);
-    infos.push_back(t);
+    infos.insert(pair<int,ThreadInfo>(newThread->getTid(),t));
     // sps[newThread->getTid()] = newSP;
     // sems[newThread->getTid()] = new Semaphore("sem Thread",0);
     
@@ -73,6 +73,9 @@ void do_UserThreadExit() {
 }
 
 void do_UserThreadJoin(int tid) {
+    if (infos.find(tid) == infos.end())
+        return;
     infos.at(tid).s->P();
-    infos.at(tid).s->V();
+    infos.erase(tid);
+
 }

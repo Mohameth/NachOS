@@ -151,7 +151,7 @@ void PutString(char* s);
 */
 char GetChar();
 
-/*Get a String of lenght size on the standard input (stdin) and write the char in ptr s
+/*Get a String of lenght size on the standard input (stdin) and write the char in ptr s the last char is overwrite for put \0
 */
 void GetString(char* s, int size);
 

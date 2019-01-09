@@ -10,5 +10,5 @@ int main()
     PutInt(val*100000);
     PutChar('\n');
 
-    Halt();
+    return 7890;
 }

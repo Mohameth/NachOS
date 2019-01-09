@@ -46,7 +46,9 @@ extern SynchDisk *synchDisk;
 
 #ifdef NETWORK
 #include "post.h"
+#include "fiablePost.h"
 extern PostOffice *postOffice;
+extern FiablePostOffice * fiablePostOffice;
 #endif
 
 #ifdef CHANGED

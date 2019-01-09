@@ -43,10 +43,9 @@ ReadAtVirtual (OpenFile * executable, int virtualaddr, int numBytes, int positio
         currentByte++;
         vAddr++;
     }
-    if (backPageTable != NULL && backNumPages) {
-        machine->pageTable = backPageTable;
-        machine->pageTableSize = backNumPages;
-    }
+    machine->pageTable = backPageTable;
+    machine->pageTableSize = backNumPages;
+
 }
 
 //----------------------------------------------------------------------
@@ -129,7 +128,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
     this->numPages = numPages;
 // zero out the entire address space, to zero the unitialized data segment 
 // and the stack segment
-    bzero (machine->mainMemory, size);
+    //bzero (machine->mainMemory, size); //Useless while we have working virtual memory
 
 // then, copy in the code and data segments into memory
     if (noffH.code.size > 0)
@@ -210,7 +209,6 @@ AddrSpace::InitRegisters ()
 //
 //      For now, nothing!
 //----------------------------------------------------------------------
-
 void
 AddrSpace::SaveState ()
 {

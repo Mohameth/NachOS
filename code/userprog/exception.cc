@@ -52,15 +52,26 @@ do_ForkExec (char *filename)
 	  printf ("Unable to open file %s\n", filename);
 	  return;
       }
+
+    currentThread->SaveUserState();
+    
     Thread * t = new Thread("forkexec");
     space = new AddrSpace (executable);
     t->space = space;
+    t->space->InitRegisters();
+    t->SaveUserState();
+
+    currentThread->RestoreUserState();
+    currentThread->space->RestoreState();
 
     delete executable;		// close file
 
-    t->space->InitRegisters ();	// set the initial register values
-    // t->space->RestoreState ();	// load page table register
-    scheduler->ReadyToRun(t);
+
+    IntStatus oldLevel = interrupt->SetLevel (IntOff);
+    scheduler->ReadyToRun (t);	// ReadyToRun assumes that interrupts 
+    // are disabled!
+    (void) interrupt->SetLevel (oldLevel);
+
     // the address space exits
     // by doing the syscall "exit"
     printf("Fork done !\n");
@@ -118,7 +129,6 @@ ExceptionHandler (ExceptionType which) {
       case SC_Exit: {
         DEBUG('a', "User Program terminate\n");
         printf("exit with status %d\n",machine->ReadRegister(3));
-        interrupt->Halt();
         break;
       }
 

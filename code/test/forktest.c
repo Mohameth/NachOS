@@ -16,6 +16,16 @@ int main()
     PutChar('L');
     PutChar('O');
     PutChar('L');
+    PutChar('O');
+    PutChar('L');
+    PutChar('\n');
+    PutChar('L');
+    PutChar('O');
+    PutChar('L');
+    PutChar('\n');
+    PutChar('L');
+    PutChar('O');
+    PutChar('L');
     PutChar('\n');
     Exit(0);    
 }

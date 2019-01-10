@@ -377,3 +377,23 @@ FileSystem::CreateRepository(const char *name){
 
     return TRUE;
 }
+
+void 
+FileSystem::addOpenFile(int id, OpenFile* f) {
+    openFiles.insert(pair<int,OpenFile*>(id,f));
+}
+
+void 
+FileSystem::removeOpenFile(int id) {
+    openFiles.erase(id);
+}
+
+OpenFile* 
+FileSystem::getOpenFile(int id) {
+    return openFiles.at(id);
+}
+
+int 
+FileSystem::getUnusedId() {
+    return ++openFileIdCounter;
+}

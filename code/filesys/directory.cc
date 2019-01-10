@@ -39,8 +39,10 @@ Directory::Directory(int size)
 {
     table = new DirectoryEntry[size];
     tableSize = size;
-    for (int i = 0; i < tableSize; i++)
-	table[i].inUse = FALSE;
+    for (int i = 0; i < tableSize; i++){
+        table[i].inUse = FALSE;
+        table[i].isFile=TRUE;
+    }
 }
 
 //----------------------------------------------------------------------
@@ -194,4 +196,20 @@ Directory::Print()
 	}
     printf("\n");
     delete hdr;
+}
+
+void Directory::setToRepository(const char *name){
+    int index;
+    if ((index=FindIndex(name)) != -1)
+	return;
+
+    table[index].isFile=FALSE;
+}
+
+bool Directory::isEmpty(){
+    for(int i=0;i<tableSize;i++){
+        if(table[i].inUse==TRUE)
+        return FALSE;
+    }
+    return FALSE;
 }

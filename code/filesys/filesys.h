@@ -37,6 +37,8 @@
 
 #include "copyright.h"
 #include "openfile.h"
+#include <map>
+using namespace std;
 
 #ifdef FILESYS_STUB 		// Temporarily implement file system calls as 
 				// calls to UNIX, until the real file system
@@ -91,7 +93,8 @@ class FileSystem {
 					// represented as a file
    OpenFile* directoryFile;		// "Root" directory -- list of 
 					// file names, represented as a file
-	OpenFile* currentRepository;
+	map<int,OpenFile*> openFile;				
+	int sectorCurrentRepository;
 };
 
 #endif // FILESYS

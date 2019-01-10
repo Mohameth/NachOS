@@ -211,5 +211,13 @@ bool Directory::isEmpty(){
         if(table[i].inUse==TRUE)
         return FALSE;
     }
-    return FALSE;
+    return TRUE;
+}
+
+bool Directory::isRepository(const char *name){
+    int index;
+    if ((index=FindIndex(name)) != -1)
+	return FALSE;
+
+    return !table[index].isFile;
 }

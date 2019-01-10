@@ -126,7 +126,8 @@ FileSystem::FileSystem(bool format)
 
 	freeMap->WriteBack(freeMapFile);	 // flush changes to disk
 	directory->WriteBack(directoryFile);
-    currentRepository=directoryFile;
+    openFile.insert(pair<int,OpenFile*>(DirectorySector,directoryFile));
+    sectorCurrentRepository=DirectorySector;
 
 	if (DebugIsEnabled('f')) {
 	    freeMap->Print();
@@ -186,7 +187,7 @@ FileSystem::Create(const char *name, int initialSize)
     DEBUG('f', "Creating file %s, size %d\n", name, initialSize);
 
     directory = new Directory(NumDirEntries);
-    directory->FetchFrom(directoryFile);
+    directory->FetchFrom(openFile.at(sectorCurrentRepository));
 
     if (directory->Find(name) != -1)
       success = FALSE;			// file is already in directory
@@ -206,7 +207,7 @@ FileSystem::Create(const char *name, int initialSize)
 	    	success = TRUE;
 		// everthing worked, flush all changes back to disk
     	    	hdr->WriteBack(sector); 		
-    	    	directory->WriteBack(directoryFile);
+    	    	directory->WriteBack(openFile.at(sectorCurrentRepository));
     	    	freeMap->WriteBack(freeMapFile);
 	    }
             delete hdr;
@@ -261,6 +262,7 @@ bool
 FileSystem::Remove(const char *name)
 { 
     Directory *directory;
+    Directory *directory2;
     BitMap *freeMap;
     FileHeader *fileHdr;
     int sector;
@@ -273,15 +275,17 @@ FileSystem::Remove(const char *name)
        return FALSE;			 // file not found 
     }
 
-    OpenFile *file=new OpenFile(sector);
-    Directory *directory2= new Directory(NumDirEntries);
-    directory2->FetchFrom(file);
+    if(directory->isRepository(name)){
+        OpenFile *file=new OpenFile(sector);
+        directory2= new Directory(NumDirEntries);
+        directory2->FetchFrom(file);
 
-    if(!directory2->isEmpty()){
-        delete directory;
-        delete directory2;
-        delete file;
-        return FALSE;
+        if(!directory2->isEmpty()){
+            delete directory;
+            delete directory2;
+            delete file;
+            return FALSE;
+        }
     }
 
     fileHdr=new FileHeader;
@@ -298,6 +302,10 @@ FileSystem::Remove(const char *name)
     directory->WriteBack(directoryFile);        // flush to disk
     delete fileHdr;
     delete directory;
+    
+    if(directory->isRepository(name)){
+        delete directory2;
+    }   
     delete freeMap;
     return TRUE;
 } 
@@ -373,7 +381,8 @@ FileSystem::CreateRepository(const char *name){
     directory2->Add(".",directory->Find(name));
 
     directory->WriteBack(directoryFile);
-    delete file;
+    directory2->WriteBack(file);
+    delete directory2;
 
     return TRUE;
 }

@@ -22,4 +22,9 @@ extern void do_UserThreadExit();
 
 extern void do_UserThreadJoin(int tid);
 
+extern void StartForkExec(int arg);
+
+extern void do_ForkExec (char * filename);
+
+
 #endif // USERTHREAD_H

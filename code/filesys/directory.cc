@@ -200,7 +200,7 @@ Directory::Print()
 
 void Directory::setToRepository(const char *name){
     int index;
-    if ((index=FindIndex(name)) != -1)
+    if ((index=FindIndex(name)) == -1)
 	return;
 
     table[index].isFile=FALSE;
@@ -216,7 +216,7 @@ bool Directory::isEmpty(){
 
 bool Directory::isRepository(const char *name){
     int index;
-    if ((index=FindIndex(name)) != -1)
+    if ((index=FindIndex(name)) == -1)
 	return FALSE;
 
     return !table[index].isFile;

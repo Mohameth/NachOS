@@ -64,6 +64,11 @@ class FileSystem {
 
     bool Remove(char *name) { return Unlink(name) == 0; }
 
+	/* Pour faire plaisir au compilateur */
+	OpenFile* getOpenFile(int id) {return NULL;}
+	void removeOpenFile(int id) {return ;}
+	void addOpenFile(int id, OpenFile* f) {return ;}
+	int getUnusedId() {return -1;}
 };
 
 #else // FILESYS
@@ -88,11 +93,20 @@ class FileSystem {
     void Print();			// List all the files and their contents
 	bool CreateRepository(const char *name);
 
+	void addOpenFile(int id, OpenFile* f);
+	void removeOpenFile(int id);
+	int getUnusedId();
+
+	OpenFile* getOpenFile(int id);
+	void changeRepository();
+	void printRepository();
+	bool changeRepository(const char *name);
+
   private:
    OpenFile* freeMapFile;		// Bit map of free disk blocks,
 					// represented as a file
-   OpenFile* directoryFile;		// "Root" directory -- list of 
-					// file names, represented as a file
+   //OpenFile* directoryFile;		// "Root" directory -- list of 
+					// file names, represented as a file					
 	map<int,OpenFile*> openFile;				
 	int sectorCurrentRepository;
 };

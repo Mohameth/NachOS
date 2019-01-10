@@ -181,6 +181,31 @@ FileRead()
     delete openFile;	// close file
 }
 
+void testCD() {
+    printf("test change directory \n\n");
+    if (!fileSystem->CreateRepository("test1")) printf("ERREUR 1 \n");
+    fileSystem->printRepository();
+    if (!fileSystem->changeRepository("test1")) printf("ERREUR 2 \n");
+
+    if (!fileSystem->CreateRepository("test12")) printf("ERREUR 3 \n");
+    fileSystem->printRepository();
+
+    if (!fileSystem->changeRepository("test12")) printf("ERREUR A \n");
+    if (!fileSystem->CreateRepository("test2")) printf("ERREUR B \n");
+    if (!fileSystem->changeRepository("test2")) printf("ERREUR 2 \n");
+    if (!fileSystem->CreateRepository("test3")) printf("ERREUR C \n");
+    if (!fileSystem->changeRepository("test3")) printf("ERREUR D \n");
+
+    if (!fileSystem->changeRepository("..")) printf("ERREUR L \n");
+    if (!fileSystem->changeRepository("..")) printf("ERREUR M \n");
+    if (!fileSystem->changeRepository("..")) printf("ERREUR N \n");
+
+    if (!fileSystem->changeRepository("..")) printf("ERREUR 4 \n");
+    if (!fileSystem->CreateRepository("test2")) printf("ERREUR 5 \n");
+
+    fileSystem->printRepository();
+}
+
 void
 PerformanceTest()
 {
@@ -188,6 +213,8 @@ PerformanceTest()
     stats->Print();
     FileWrite();
     FileRead();
+    //fileSystem->printRepository();
+    testCD();
     if (!fileSystem->Remove(FileName)) {
       printf("Perf test: unable to remove %s\n", FileName);
       return;

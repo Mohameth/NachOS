@@ -35,9 +35,10 @@ MailTest(int farAddr)
 {
     PacketHeader outPktHdr, inPktHdr;
     MailHeader outMailHdr, inMailHdr;
-    const char *data = "Hello there!";
-    //const char *ack = "Got it!";
-    char buffer[MaxMailSize];
+    const char *data = "a very very very very very very very very very very very very very very very very very very very long email";
+    //const char *data = "Hello there!";
+    //char buffer[MaxMailSize];
+    char buffer[110];
 
     // construct packet, mail header for original message
     // To: destination machine, mailbox 0
@@ -48,9 +49,9 @@ MailTest(int farAddr)
     outMailHdr.length = strlen(data) + 1;
 
     if (farAddr == 1) {
-        fiablePostOffice->Send(outPktHdr, outMailHdr, data); 
+        unlimitedPostOffice->Send(outPktHdr, outMailHdr, data); 
     } else {
-        fiablePostOffice->Receive(0, &inPktHdr, &inMailHdr, buffer);
+        unlimitedPostOffice->Receive(0, &inPktHdr, &inMailHdr, buffer);
         printf("Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
         fflush(stdout);
     }

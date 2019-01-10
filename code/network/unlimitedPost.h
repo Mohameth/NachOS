@@ -1,26 +1,24 @@
-#ifndef FIABLEPOST_H
-#define FIABLEPOST_H
+#ifndef UNLIMITEDPOST_H
+#define UNLIMITEDPOST_H
 
 #include "network.h"
 #include "synchlist.h"
-#include "post.h"
+#include "fiablePost.h"
 
-class FiablePostOffice {
+class UnlimitedPostOffice {
   public:
-    FiablePostOffice(NetworkAddress addr, double reliability, int nBoxes);
+    UnlimitedPostOffice(NetworkAddress addr, double reliability, int nBoxes);
 				// Allocate and initialize Post Office
 				//   "reliability" is how many packets
 				//   get dropped by the underlying network
-    FiablePostOffice(PostOffice* p);
-      
-    ~FiablePostOffice();		// De-allocate Post Office data
+    UnlimitedPostOffice(FiablePostOffice *p);
+    ~UnlimitedPostOffice();		// De-allocate Post Office data
     
     void Send(PacketHeader pktHdr, MailHeader mailHdr, const char *data);
     				// Send a message to a mailbox on a remote 
 				// machine.  The fromBox in the MailHeader is 
 				// the return box for ack's.
-    
-    void SendAck(PacketHeader pktHdr, MailHeader mailHdr, const char *data);
+
 
     void Receive(int box, PacketHeader *pktHdr, 
 		MailHeader *mailHdr, char *data);
@@ -29,18 +27,10 @@ class FiablePostOffice {
 
     void PostalDelivery();	// Wait for incoming messages, 
 				// and then put them in the correct mailbox
-    void CheckAckArrive();
-
-    void ReSend();
 
   private:
-    PostOffice * post;
-    PacketHeader lpktHdr;
-    MailHeader lmailHdr;
-    const char* ldata;
-    int nbReemis;
-    bool ack;
-    int myAddr;
+    FiablePostOffice * fiablepost;
+    
 };
 
 #endif

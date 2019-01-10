@@ -54,6 +54,7 @@ do_ForkExec (char *filename)
       }
 
     currentThread->SaveUserState();
+    currentThread->space->SaveState();
     
     Thread * t = new Thread("forkexec");
     space = new AddrSpace (executable);

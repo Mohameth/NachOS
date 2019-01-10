@@ -12,6 +12,7 @@
 CPPFLAGS+=-Wall -Wshadow -Werror
 CFLAGS+=-g
 CXXFLAGS+=-g
+ASFLAGS+=-g
 
 # HOST_CC (and other similar variables) is the compiler used to
 # produce native code

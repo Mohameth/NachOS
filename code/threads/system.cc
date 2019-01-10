@@ -178,8 +178,8 @@ Initialize (int argc, char **argv)
 
 #ifdef NETWORK
     postOffice = new PostOffice (netname, rely, 10);
-	fiablePostOffice = new FiablePostOffice(netname,rely,10);
-	unlimitedPostOffice = new UnlimitedPostOffice(netname,rely,10);
+	fiablePostOffice = new FiablePostOffice(postOffice);
+	unlimitedPostOffice = new UnlimitedPostOffice(fiablePostOffice);
 #endif
 
 #ifdef CHANGED

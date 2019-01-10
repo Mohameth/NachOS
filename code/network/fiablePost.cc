@@ -19,6 +19,10 @@ FiablePostOffice::FiablePostOffice(NetworkAddress addr, double reliability, int 
     myAddr = addr;
 }
 
+FiablePostOffice::FiablePostOffice(PostOffice* p) {
+    post = p;
+}
+
 //----------------------------------------------------------------------
 // FiablePostOffice::~FiablePostOffice
 // 	De-allocate the fiable post office data structures.

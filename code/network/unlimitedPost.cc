@@ -8,6 +8,10 @@ UnlimitedPostOffice::UnlimitedPostOffice(NetworkAddress addr, double reliability
     fiablepost = new FiablePostOffice(addr,reliability,nBoxes);
 }
 
+UnlimitedPostOffice::UnlimitedPostOffice(FiablePostOffice* p) {
+    fiablepost = p;
+}
+
 //----------------------------------------------------------------------
 // FiablePostOffice::~FiablePostOffice
 // 	De-allocate the fiable post office data structures.

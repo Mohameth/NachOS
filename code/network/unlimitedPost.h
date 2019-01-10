@@ -11,6 +11,7 @@ class UnlimitedPostOffice {
 				// Allocate and initialize Post Office
 				//   "reliability" is how many packets
 				//   get dropped by the underlying network
+    UnlimitedPostOffice(FiablePostOffice *p);
     ~UnlimitedPostOffice();		// De-allocate Post Office data
     
     void Send(PacketHeader pktHdr, MailHeader mailHdr, const char *data);

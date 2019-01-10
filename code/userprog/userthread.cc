@@ -75,3 +75,34 @@ void do_UserThreadJoin(int tid) {
     infos.erase(tid); //supprime du hashmap les infos du thread (libèration de la mémoire)
 
 }
+
+void StartForkExec(int arg) {
+
+    char * filename = (char *) arg;
+    OpenFile *executable = fileSystem->Open (filename);
+    AddrSpace *space;
+    if (executable == NULL)
+        {
+    printf ("Unable to open file %s\n", filename);
+    return;
+        }
+
+    space = new AddrSpace (executable);
+
+    delete executable;		// close file
+
+    currentThread->space = space;
+    currentThread->space->InitRegisters();
+    currentThread->space->RestoreState();
+    machine->Run();
+}
+
+void
+do_ForkExec (char * filename)
+{
+    Thread * t = new Thread("forkexec");
+    void (*f)(int) = StartForkExec;
+    t->Fork(f, (int) filename);
+}
+
+

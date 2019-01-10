@@ -84,12 +84,14 @@ class FileSystem {
     void List();			// List all the files in the file system
 
     void Print();			// List all the files and their contents
+	bool CreateRepository(const char *name);
 
   private:
    OpenFile* freeMapFile;		// Bit map of free disk blocks,
 					// represented as a file
    OpenFile* directoryFile;		// "Root" directory -- list of 
 					// file names, represented as a file
+	OpenFile* currentRepository;
 };
 
 #endif // FILESYS

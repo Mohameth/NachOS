@@ -122,8 +122,11 @@ FileSystem::FileSystem(bool format)
     // to hold the file data for the directory and bitmap.
 
         DEBUG('f', "Writing bitmap and directory back to disk.\n");
+    directory->Add(".",DirectorySector);
+
 	freeMap->WriteBack(freeMapFile);	 // flush changes to disk
 	directory->WriteBack(directoryFile);
+    currentRepository=directoryFile;
 
 	if (DebugIsEnabled('f')) {
 	    freeMap->Print();
@@ -269,7 +272,19 @@ FileSystem::Remove(const char *name)
        delete directory;
        return FALSE;			 // file not found 
     }
-    fileHdr = new FileHeader;
+
+    OpenFile *file=new OpenFile(sector);
+    Directory *directory2= new Directory(NumDirEntries);
+    directory2->FetchFrom(file);
+
+    if(!directory2->isEmpty()){
+        delete directory;
+        delete directory2;
+        delete file;
+        return FALSE;
+    }
+
+    fileHdr=new FileHeader;
     fileHdr->FetchFrom(sector);
 
     freeMap = new BitMap(NumSectors);
@@ -339,3 +354,26 @@ FileSystem::Print()
     delete freeMap;
     delete directory;
 } 
+
+bool
+FileSystem::CreateRepository(const char *name){
+
+    if(!Create(name,DirectoryFileSize))
+    return FALSE;
+
+    Directory *directory = new Directory(NumDirEntries);
+    directory->FetchFrom(directoryFile);
+    directory->setToRepository(name);
+
+    Directory *directory2 = new Directory(NumDirEntries);
+    OpenFile *file=new OpenFile(directory->Find(name));
+    directory2->FetchFrom(file);
+
+    directory2->Add("..",directory->Find("."));
+    directory2->Add(".",directory->Find(name));
+
+    directory->WriteBack(directoryFile);
+    delete file;
+
+    return TRUE;
+}

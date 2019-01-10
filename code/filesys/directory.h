@@ -36,6 +36,7 @@ class DirectoryEntry {
 					//   FileHeader for this file 
     char name[FileNameMaxLen + 1];	// Text name for file, with +1 for 
 					// the trailing '\0'
+    bool isFile;
 };
 
 // The following class defines a UNIX-like "directory".  Each entry in
@@ -70,6 +71,8 @@ class Directory {
     void Print();			// Verbose print of the contents
 					//  of the directory -- all the file
 					//  names and their contents.
+    void setToRepository(const char *name);
+    bool isEmpty();
 
   private:
     int tableSize;			// Number of directory entries

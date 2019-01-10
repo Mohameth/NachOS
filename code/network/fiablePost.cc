@@ -15,6 +15,7 @@ FiablePostOffice::FiablePostOffice(NetworkAddress addr, double reliability, int 
     post = new PostOffice(addr,reliability,nBoxes);
     nbReemis = 0;
     ack = false;
+    
     myAddr = addr;
 }
 
@@ -62,7 +63,7 @@ FiablePostOffice::Send(PacketHeader pktHdr, MailHeader mailHdr, const char* data
     lpktHdr = pktHdr;
     lmailHdr = mailHdr;
     ldata = data;
-    printf("paquet Send \n");
+    //printf("paquet Send \n");
 
     interrupt->Schedule(AckTimer, (int)this, TEMPO, TimerInt);
 
@@ -70,11 +71,11 @@ FiablePostOffice::Send(PacketHeader pktHdr, MailHeader mailHdr, const char* data
     MailHeader inMailHdr;
     char buffer[MaxMailSize];
 
-    printf("try to recived ack \n");
+    //printf("try to recived ack \n");
     post->Receive(1, &inPktHdr, &inMailHdr, buffer);
     if (!strcmp(buffer,"ack")) {
         ack=true;
-        printf("ack reçu \n");
+        //printf("ack reçu \n");
         // const char *ackmess = "ack";
         // PacketHeader outPktHdr;
         // MailHeader outMailHdr;
@@ -84,8 +85,8 @@ FiablePostOffice::Send(PacketHeader pktHdr, MailHeader mailHdr, const char* data
     
         //post->Send(outPktHdr,outMailHdr,ackmess);
     }
-    else
-        printf("message non reçu : %s reçu\n",buffer);
+    //else
+        //printf("message non reçu : %s reçu\n",buffer);
 }
 
 //----------------------------------------------------------------------
@@ -108,7 +109,7 @@ FiablePostOffice::Receive(int box, PacketHeader *pktHdr,
 				MailHeader *mailHdr, char* data)
 {
     post->Receive(box,pktHdr,mailHdr,data);
-    printf("paquet reçu : envoie du ack\n");
+    //printf("paquet reçu : envoie du ack\n");
     const char *ackmess = "ack";
     PacketHeader outPktHdr;
     MailHeader outMailHdr;
@@ -128,7 +129,7 @@ FiablePostOffice::SendAck(PacketHeader pktHdr, MailHeader mailHdr, const char* d
     lpktHdr = pktHdr;
     lmailHdr = mailHdr;
     ldata = data;
-    printf("Ack Send \n");
+    //printf("Ack Send \n");
 
     interrupt->Schedule(AckTimer, (int)this, TEMPO, TimerInt);
 
@@ -136,26 +137,26 @@ FiablePostOffice::SendAck(PacketHeader pktHdr, MailHeader mailHdr, const char* d
     MailHeader inMailHdr;
     char buffer[MaxMailSize];
 
-    printf("try to recived ack \n");
+    //printf("try to recived ack \n");
     post->Receive(1, &inPktHdr, &inMailHdr, buffer);
     if (!strcmp(buffer,"ack")) {
         ack=true;
-        printf("ack reçu\n");
+        //printf("ack reçu\n");
     }
-    else
-        printf("ack non reçu : %s reçu\n",buffer);
+    //else
+        //printf("ack non reçu : %s reçu\n",buffer);
 }
 
 void FiablePostOffice::CheckAckArrive() {
     if (ack == false) {
         if (nbReemis < NBMAXREEMISSIONS) {
-            printf("reemission n° %d\n",nbReemis);
+            // printf("reemission n° %d\n",nbReemis);
             ReSend();
         }
         else {
             ack = false;
             nbReemis = 0;
-            printf("paquet Perdu\n");
+            // printf("paquet Perdu\n");
 
             //prevenir le thread qui à appelé send que le paquet a été perdu
             PacketHeader outPktHdr;

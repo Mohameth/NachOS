@@ -111,7 +111,7 @@ Print(char *name)
 #define FileName 	"TestFile"
 #define Contents 	"1234567890"
 #define ContentSize 	strlen(Contents)
-#define FileSize 	((int)(ContentSize * 5000))
+#define FileSize 	((int)(ContentSize * 50))
 
 static void 
 FileWrite()
@@ -121,23 +121,34 @@ FileWrite()
 
     printf("Sequential write of %d byte file, in %zd byte chunks\n", 
 	FileSize, ContentSize);
-    if (!fileSystem->Create(FileName, 0)) {
+    if (!fileSystem->Create(FileName,FileSize)) {
       printf("Perf test: can't create %s\n", FileName);
       return;
+    }
+
+    if (!fileSystem->CreateRepository("dirTest")) {
+        printf("ERREUR \n");
+
+    } else {
+        printf("OK \n");
     }
     openFile = fileSystem->Open(FileName);
     if (openFile == NULL) {
 	printf("Perf test: unable to open %s\n", FileName);
 	return;
     }
+    printf("File open, start writing\n");
     for (i = 0; i < FileSize; i += ContentSize) {
         numBytes = openFile->Write(Contents, ContentSize);
-	if (numBytes < 10) {
-	    printf("Perf test: unable to write %s\n", FileName);
-	    delete openFile;
-	    return;
-	}
+        //if (numBytes == 0) break;
+	    if (numBytes < 10) {
+	        printf("%d Perf test: unable to write %s\n",i,FileName);
+	        delete openFile;
+	        return;
+	    }
     }
+
+    printf("CA MARCHE !! \n\n");
     delete openFile;	// close file
 }
 
@@ -165,8 +176,41 @@ FileRead()
 	    return;
 	}
     }
+    printf("CA MARCHE !! \n\n");
     delete [] buffer;
     delete openFile;	// close file
+}
+
+void testCD() {
+    printf("test change directory \n\n");
+    if (!fileSystem->CreateRepository("test1")) printf("ERREUR 1 \n");
+    //fileSystem->printRepository();
+    if (!fileSystem->changeRepository("test1")) printf("ERREUR 2 \n");
+
+    if (!fileSystem->CreateRepository("test12")) printf("ERREUR 3 \n");
+    //fileSystem->printRepository();
+
+    if (!fileSystem->changeRepository("test12")) printf("ERREUR A \n");
+    if (!fileSystem->CreateRepository("test2")) printf("ERREUR B \n");
+    if (!fileSystem->changeRepository("test2")) printf("ERREUR 2 \n");
+    if (!fileSystem->CreateRepository("test3")) printf("ERREUR C \n");
+    if (!fileSystem->changeRepository("test3")) printf("ERREUR D \n");
+    
+    if (!fileSystem->changeRepository("..")) printf("ERREUR L \n");
+
+    if (!fileSystem->Create("file", 5)) printf("ERREUR FILE CREATION \n");
+    if (!fileSystem->Remove("file")) printf("ERREUR FILE REMOVE \n");
+    fileSystem->printRepository();
+    if (!fileSystem->Remove("test3")) printf("ERREUR FOLDER REMOVE \n");
+    fileSystem->printRepository();
+
+    if (!fileSystem->changeRepository("..")) printf("ERREUR M \n");
+    if (!fileSystem->changeRepository("..")) printf("ERREUR N \n");
+
+    if (!fileSystem->Remove("test12")) printf("C'est Normal FOLDER REMOVE \n");
+    fileSystem->printRepository();
+
+    //fileSystem->printRepository();
 }
 
 void
@@ -176,10 +220,11 @@ PerformanceTest()
     stats->Print();
     FileWrite();
     FileRead();
+    //fileSystem->printRepository();
+    testCD();
     if (!fileSystem->Remove(FileName)) {
       printf("Perf test: unable to remove %s\n", FileName);
       return;
     }
     stats->Print();
 }
-

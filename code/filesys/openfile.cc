@@ -81,6 +81,7 @@ OpenFile::Read(char *into, int numBytes)
 int
 OpenFile::Write(const char *into, int numBytes)
 {
+   //printf("OpenFile:Write %s, %d\n", into, numBytes); 
    int result = WriteAt(into, numBytes, seekPosition);
    seekPosition += result;
    return result;
@@ -150,10 +151,11 @@ OpenFile::WriteAt(const char *from, int numBytes, int position)
     bool firstAligned, lastAligned;
     char *buf;
 
+    //printf("OpenFile::WriteAt - filelength = %d - position = %d\n", fileLength, position);
     if ((numBytes <= 0) || (position >= fileLength))
 	return 0;				// check request
     if ((position + numBytes) > fileLength)
-	numBytes = fileLength - position;
+	    numBytes = fileLength - position;
     DEBUG('f', "Writing %d bytes at %d, from file of length %d.\n", 	
 			numBytes, position, fileLength);
 

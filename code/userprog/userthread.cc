@@ -10,10 +10,10 @@ map<int,ThreadInfo> infos;
 
 int compteurTID =0;
 
-Semaphore * mutex = new Semaphore("mutex",1);
+Semaphore * mutex_thread = new Semaphore("mutex_thread",1);
 
 static void StartUserThread(int f) {
-    mutex->P();
+    mutex_thread->P();
 
     DEBUG('a', "Start user thread\n");
     args* a = (args*) f;
@@ -25,27 +25,27 @@ static void StartUserThread(int f) {
     machine->WriteRegister(StackReg,infos.at(currentThread->getTid()).sp );
 
     machine->WriteRegister(4,a->arg);
-    mutex->V();
+    mutex_thread->V();
 
     machine->Run(); //execute la fonction dans PCREG
 }
 
 int do_UserThreadCreate(int f, int arg) {
-    mutex->P(); // critical section start
+    mutex_thread->P(); // critical section start
 
     args* a = new args; //contient les arguments: fonction à exectuer et arguments de cette fonction pour le thread
     a->fonction = f;
     a->arg = arg;
     int newSP = currentThread->space->GetSPnewThread();
     if (newSP == -1) { //création impossible pas assez de mémoire
-        mutex->V();
+        mutex_thread->V();
         return -1;
     }
 
     DEBUG('a', "Create user thread\n");
     Thread *newThread = new Thread("user thread");
     if (newThread == 0) {
-        mutex->V();
+        mutex_thread->V();
         return -1;
     }
     newThread->setTid(compteurTID++); //id du thread crée
@@ -54,7 +54,7 @@ int do_UserThreadCreate(int f, int arg) {
     t.s = new Semaphore("sem Thread",0);
     infos.insert(pair<int,ThreadInfo>(newThread->getTid(),t)); //ajout dans la hashmap les données
    
-    mutex->V();
+    mutex_thread->V();
 
     newThread->Fork(StartUserThread,(int) a);  //execute StartUserThread
     return newThread->getTid();
@@ -75,34 +75,4 @@ void do_UserThreadJoin(int tid) {
     infos.erase(tid); //supprime du hashmap les infos du thread (libèration de la mémoire)
 
 }
-
-void StartForkExec(int arg) {
-
-    char * filename = (char *) arg;
-    OpenFile *executable = fileSystem->Open (filename);
-    AddrSpace *space;
-    if (executable == NULL)
-        {
-    printf ("Unable to open file %s\n", filename);
-    return;
-        }
-
-    space = new AddrSpace (executable);
-
-    delete executable;		// close file
-
-    currentThread->space = space;
-    currentThread->space->InitRegisters();
-    currentThread->space->RestoreState();
-    machine->Run();
-}
-
-void
-do_ForkExec (char * filename)
-{
-    Thread * t = new Thread("forkexec");
-    void (*f)(int) = StartForkExec;
-    t->Fork(f, (int) filename);
-}
-
 

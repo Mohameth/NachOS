@@ -77,9 +77,9 @@ void do_UserThreadJoin(int tid) {
 }
 
 void attendreThread(){
-    mutex->P();
+    mutex_thread->P();
     int compteur=compteurTID;
-    mutex->V();
+    mutex_thread->V();
     for(int i=0;i<compteur;i++){
         do_UserThreadJoin(i);
     }

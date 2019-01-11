@@ -3,8 +3,8 @@
 
 int main()
 {
-    ForkExec("putchar");
-    // ForkExec("userpages1");
+    // ForkExec("putchar");
+    ForkExec("userpages0");
     PutChar('L');
     PutChar('O');
     PutChar('L');
@@ -17,5 +17,5 @@ int main()
     PutChar('O');
     PutChar('L');
     PutChar('\n');
-    while(1);
+    Exit(0);    
 }

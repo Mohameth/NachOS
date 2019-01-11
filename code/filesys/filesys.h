@@ -103,7 +103,6 @@ class FileSystem {
 	int getId(OpenFile *f);
 	OpenFile* getOpenFile(int id);
 
-	void changeRepository();
 	void printRepository();
 	bool changeRepository(const char *name);
 	void ajoutFichierOuvert(OpenFile* f);

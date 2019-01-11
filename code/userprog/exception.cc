@@ -200,48 +200,53 @@ ExceptionHandler (ExceptionType which) {
         break;
       }
 
-      /*case SC_Open: {
+      #ifdef FILESYS
+
+      case SC_Open: {
         char name[MAX_STRING_SIZE];
         int addr = machine->ReadRegister(4);
         synchconsole->copyStringFromMachine(addr, name, MAX_STRING_SIZE-1);
 
         OpenFile* file = fileSystem->Open(name);
         if (file == NULL) printf("Erreur \n"); //TODO: Sortir
-        int id = fileSystem->getUnusedId();
-
-        fileSystem->addOpenFile(id, file);
+        int id = fileSystem->getId(file);
 
         machine->WriteRegister(2, id);
-        printf("fichier %s ouvert : %d",name, id);
+        printf("fichier %s ouvert (id=%d)\n",name, id);
         break;
-      }*/
+      }
 
       case SC_Create: {
         char name[MAX_STRING_SIZE];
         int addr = machine->ReadRegister(4);
         synchconsole->copyStringFromMachine(addr, name, MAX_STRING_SIZE-1);
 
-        bool res = fileSystem->Create(name, 0);//TODO: gerer initialSize
+        bool res = fileSystem->Create(name, 10);//TODO: gerer initialSize
         if (res)  printf("Creation de fichier vide reussi\n");
         else      printf("ERREUR DE CREATION \n");
         break;
       }
 
-      /*case SC_Read: {
-        //int bufAddr = machine->ReadRegister(4);
+      case SC_Read: {
+        int bufAddr = machine->ReadRegister(4);
         int size    = machine->ReadRegister(5);
         int fileId  = machine->ReadRegister(6);
 
         char value[MAX_STRING_SIZE];
-        
-        printf("id = %d \n", fileId);
 
         OpenFile* f = fileSystem->getOpenFile(fileId);
         
-        f->Read(value, size);
-        //TODO: mettre dans le buffer pointé par bufAddre la valeur
-        //TODO: retourner nb octets lues
-        printf("Lecture de %d octets = %s, id = %d \n", size, value, fileId);
+        int nb = f->Read(value, size);
+        f->Length();
+        if (nb > 0) {
+
+          for (int i = 0; i < nb; i++) {
+            machine->WriteMem(bufAddr + i, 1, value[i]);
+          }
+        }
+
+        machine->WriteRegister(2, nb);
+        printf("Lecture de %d octets = %s, id = %d \n", nb, value, fileId);
 
         break;
       }
@@ -253,15 +258,58 @@ ExceptionHandler (ExceptionType which) {
 
         char value[MAX_STRING_SIZE];
         synchconsole->copyStringFromMachine(valueAddr, value, MAX_STRING_SIZE-1);
-        printf("id = %d \n", fileId);
 
         OpenFile* f = fileSystem->getOpenFile(fileId);
         
         f->Write(value, size);
 
-        printf("Ecriture de %d octets = %s, id = %d \n", size, value, fileId);
+        printf("Ecriture de %d octets (\"%s\") sur le fichier d'id %d \n", size, value, fileId);
         break;
-      }*/
+      }
+
+      case SC_Seek: {
+        int position = machine->ReadRegister(4);
+        int fileId   = machine->ReadRegister(5);
+
+        OpenFile* f = fileSystem->getOpenFile(fileId);
+
+        f->Seek(position);
+
+        printf("Seek to %d\n", position);
+        break;
+      }
+
+      case SC_Close: {
+        int fileId   = machine->ReadRegister(4);
+
+        fileSystem->removeOpenFile(fileId);
+        break;
+      }
+
+      case SC_CreateRepository: {
+        int nameAddr = machine->ReadRegister(4);
+        char name[MAX_STRING_SIZE];
+        synchconsole->copyStringFromMachine(nameAddr, name, MAX_STRING_SIZE-1);
+
+        machine->WriteRegister(2, fileSystem->CreateRepository(name));
+        break;
+      }
+
+      case SC_ChangeRepository: {
+        int nameAddr = machine->ReadRegister(4);
+        char name[MAX_STRING_SIZE];
+        synchconsole->copyStringFromMachine(nameAddr, name, MAX_STRING_SIZE-1);
+
+        machine->WriteRegister(2, fileSystem->changeRepository(name));
+        break;
+      }
+
+      case SC_PrintRepository: {
+        fileSystem->printRepository();
+        break;
+      }
+
+      #endif
 
       default: {
         printf ("Unexpected user mode exception %d %d\n", which, type);
@@ -276,4 +324,4 @@ ExceptionHandler (ExceptionType which) {
 
 }
 
-#endif //CHANGED
+#endif //CHANGEDZ

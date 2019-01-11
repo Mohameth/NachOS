@@ -111,7 +111,7 @@ Print(char *name)
 #define FileName 	"TestFile"
 #define Contents 	"1234567890"
 #define ContentSize 	strlen(Contents)
-#define FileSize 	((int)(ContentSize * 50))
+#define FileSize 	((int)(ContentSize * 375))
 
 static void 
 FileWrite()

@@ -31,6 +31,5 @@ int main()
     UserThreadCreate(f2,0);
     PutChar('L');
     PutChar('\n');
-    while(1);
-    Halt();
+    Exit(0);
 }

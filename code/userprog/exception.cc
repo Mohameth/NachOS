@@ -25,6 +25,7 @@
 #include "system.h"
 #include "syscall.h"
 #include "userthread.h"
+#include "userprocess.h"
 
 //----------------------------------------------------------------------
 // UpdatePC : Increments the Program Counter register in order to resume
@@ -93,7 +94,8 @@ ExceptionHandler (ExceptionType which) {
 
       case SC_Exit: {
         DEBUG('a', "User Program terminate\n");
-        printf("exit with status %d\n",machine->ReadRegister(3));
+        printf("exit with status %d\n",machine->ReadRegister(4));
+        exitProcess();
         break;
       }
 

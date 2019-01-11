@@ -54,7 +54,8 @@ extern PostOffice *postOffice;
 #include "synchconsole.h"
 #include "frameprovider.h"
 extern SynchConsole * synchconsole;
-extern FrameProvider *frameProvider; // main memory management 
+extern FrameProvider *frameProvider; // main memory management
+extern int CurrentProcessNumber;
 #define MAX_STRING_SIZE 50
 #endif
 #endif

@@ -11,5 +11,5 @@ void print(char c, int n) {
 int main()
 {
     print('a',4);
-    while(1);
+    Exit(0);
 }

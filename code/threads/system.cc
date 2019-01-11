@@ -39,6 +39,7 @@ PostOffice *postOffice;
 #ifdef USER_PROGRAM
 SynchConsole * synchconsole;
 FrameProvider * frameProvider;
+int CurrentProcessNumber;
 #endif
 #endif
 
@@ -164,6 +165,7 @@ Initialize (int argc, char **argv)
 #ifdef USER_PROGRAM
     machine = new Machine (debugUserProg);	// this must come first
 	frameProvider = new FrameProvider(NumPhysPages);
+	CurrentProcessNumber = 0;
 #endif
 
 #ifdef FILESYS

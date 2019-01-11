@@ -184,26 +184,33 @@ FileRead()
 void testCD() {
     printf("test change directory \n\n");
     if (!fileSystem->CreateRepository("test1")) printf("ERREUR 1 \n");
-    fileSystem->printRepository();
+    //fileSystem->printRepository();
     if (!fileSystem->changeRepository("test1")) printf("ERREUR 2 \n");
 
     if (!fileSystem->CreateRepository("test12")) printf("ERREUR 3 \n");
-    fileSystem->printRepository();
+    //fileSystem->printRepository();
 
     if (!fileSystem->changeRepository("test12")) printf("ERREUR A \n");
     if (!fileSystem->CreateRepository("test2")) printf("ERREUR B \n");
     if (!fileSystem->changeRepository("test2")) printf("ERREUR 2 \n");
     if (!fileSystem->CreateRepository("test3")) printf("ERREUR C \n");
     if (!fileSystem->changeRepository("test3")) printf("ERREUR D \n");
-
+    
     if (!fileSystem->changeRepository("..")) printf("ERREUR L \n");
+
+    if (!fileSystem->Create("file", 5)) printf("ERREUR FILE CREATION \n");
+    if (!fileSystem->Remove("file")) printf("ERREUR FILE REMOVE \n");
+    fileSystem->printRepository();
+    if (!fileSystem->Remove("test3")) printf("ERREUR FOLDER REMOVE \n");
+    fileSystem->printRepository();
+
     if (!fileSystem->changeRepository("..")) printf("ERREUR M \n");
     if (!fileSystem->changeRepository("..")) printf("ERREUR N \n");
 
-    if (!fileSystem->changeRepository("..")) printf("ERREUR 4 \n");
-    if (!fileSystem->CreateRepository("test2")) printf("ERREUR 5 \n");
-
+    if (!fileSystem->Remove("test12")) printf("C'est Normal FOLDER REMOVE \n");
     fileSystem->printRepository();
+
+    //fileSystem->printRepository();
 }
 
 void

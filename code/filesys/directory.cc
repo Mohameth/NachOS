@@ -207,7 +207,7 @@ void Directory::setToRepository(const char *name){
 }
 
 bool Directory::isEmpty(){
-    for(int i=0;i<tableSize;i++){
+    for(int i=2;i<tableSize;i++){
         if(table[i].inUse==TRUE)
         return FALSE;
     }

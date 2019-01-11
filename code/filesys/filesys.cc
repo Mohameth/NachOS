@@ -81,6 +81,7 @@ FileSystem::FileSystem(bool format)
 { 
     DEBUG('f', "Initializing the file system.\n");
     sectorCurrentRepository=DirectorySector;
+    nbFicherOuvert=0;
     if (format) {
         BitMap *freeMap = new BitMap(NumSectors);
         Directory *directory = new Directory(NumDirEntries);
@@ -242,8 +243,14 @@ FileSystem::Open(const char *name)
     DEBUG('f', "Opening file %s\n", name);
     directory->FetchFrom(openFile.at(sectorCurrentRepository));
     sector = directory->Find(name); 
-    if (sector >= 0) 		
-	openFile2 = new OpenFile(sector);	// name was found in directory 
+
+    if (sector >= 0){
+        if(!directory->isRepository(name)){
+            openFile2 = new OpenFile(sector);	// name was found in directory
+            addOpenFile(openFile2);
+        }
+    } 		
+	 
     delete directory;
     return openFile2;				// return NULL if not found
 }
@@ -284,7 +291,7 @@ FileSystem::Remove(const char *name)
         directory2= new Directory(NumDirEntries);
         directory2->FetchFrom(file);
 
-        if(!directory2->isEmpty()){
+        if(!directory2->isEmpty() || !strncmp(".", name, FileNameMaxLen)){
             delete directory;
             delete directory2;
             delete file;
@@ -424,22 +431,41 @@ bool FileSystem::changeRepository(const char *name){
     return TRUE;
 }
 
-/*void 
-FileSystem::addOpenFile(int id, OpenFile* f) {
-    openFiles.insert(pair<int,OpenFile*>(id,f));
+void FileSystem::addOpenFile(OpenFile* f) {
+    if(nbFicherOuvert!=10){
+        table[nbFicherOuvert].file=f;
+        table[nbFicherOuvert].duree=0;
+        nbFicherOuvert++;
+    }
+    else{
+        int index=0,max=++table[0].duree;
+        for(int i=1;i<nbFicherOuvert;i++){
+            if(max<=++table[i].duree){
+                max=table[i].duree;
+                index=i;
+            }
+        }
+        delete table[index].file;
+        table[index].file=f;
+        table[index].duree=0;
+    }
 }
 
-void 
-FileSystem::removeOpenFile(int id) {
-    openFiles.erase(id);
+void FileSystem::removeOpenFile(int id) {
+    for(int i=id;i<nbFicherOuvert-1;i++){
+        table[i].file=table[i+1].file;
+    }
+    nbFicherOuvert--;
 }
 
-OpenFile* 
-FileSystem::getOpenFile(int id) {
-    return openFiles.at(id);
+OpenFile* FileSystem::getOpenFile(int id) {
+    return table[id].file;
 }
 
-int 
-FileSystem::getUnusedId() {
-    return ++openFileIdCounter;
-}*/
+int FileSystem::getId(OpenFile *f) {
+    for(int i=0;i<nbFicherOuvert;i++){
+        if(table[i].file==f)
+            return i;
+    }
+    return -1;
+}

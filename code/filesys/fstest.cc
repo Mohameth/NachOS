@@ -199,7 +199,7 @@ void testCD() {
     if (!fileSystem->changeRepository("..")) printf("ERREUR L \n");
 
     if (!fileSystem->Create("file", 5)) printf("ERREUR FILE CREATION \n");
-    if (!fileSystem->Remove("file")) printf("ERREUR FILE REMOVE \n");printf("heyyyyyy\n");
+    if (!fileSystem->Remove("file")) printf("ERREUR FILE REMOVE \n");
     fileSystem->printRepository();
     if (!fileSystem->Remove("test3")) printf("ERREUR FOLDER REMOVE \n");
     fileSystem->printRepository();
@@ -222,6 +222,7 @@ PerformanceTest()
     FileRead();
     //fileSystem->printRepository();
     testCD();
+
     if (!fileSystem->Remove(FileName)) {
       printf("Perf test: unable to remove %s\n", FileName);
       return;

@@ -248,7 +248,8 @@ FileSystem::Open(const char *name)
     if (sector >= 0){
         if(!existFichier(name) && !directory->isRepository(name)){
             openFile2 = new OpenFile(sector);	// name was found in directory
-            addOpenFile(openFile2,name,sector);
+            if(!addOpenFile(openFile2,name,sector))
+            return NULL;
         }
     } 		
 	 
@@ -282,6 +283,7 @@ FileSystem::Remove(const char *name)
     BitMap *freeMap;
     FileHeader *fileHdr;
     int sector;
+    OpenFile *file=NULL;
     
     directory = new Directory(NumDirEntries);
     directory->FetchFrom(openFile.at(sectorCurrentRepository));
@@ -292,14 +294,13 @@ FileSystem::Remove(const char *name)
     }
 
     if(directory->isRepository(name)){
-        OpenFile *file=openFile.at(sector);
+        file=openFile.at(sector);
         directory2= new Directory(NumDirEntries);
         directory2->FetchFrom(file);
 
-        if(!directory2->isEmpty() || !strncmp(".", name, FileNameMaxLen)){
+        if(!directory2->isEmpty() || !strncmp("..", name, FileNameMaxLen) || !strncmp(".", name, FileNameMaxLen)){
             delete directory;
-            delete directory2;
-            openFile.erase(sector);
+            delete directory2;            
             delete file;
             return FALSE;
         }
@@ -319,7 +320,9 @@ FileSystem::Remove(const char *name)
     directory->WriteBack(openFile.at(sectorCurrentRepository));      // flush to disk
     
     if(directory->isRepository(name)){
-        delete directory2;
+        openFile.erase(sector);
+        delete directory2;            
+        delete file;
     }   
     delete fileHdr;
     delete directory;
@@ -437,15 +440,18 @@ bool FileSystem::changeRepository(const char *name){
     return TRUE;
 }
 
-void FileSystem::addOpenFile(OpenFile* f,const char *name,int secteur) {
+bool FileSystem::existRepository(int secteur){
+    return openFile.find(sectorCurrentRepository)!=openFile.end();
+}
+
+bool FileSystem::addOpenFile(OpenFile* f,const char *name,int secteur) {
     if(nbFicherOuvert==10){
-        printf("Erreur nombre Max de fichiers ouverts\n");
-        return;
+        return FALSE;
     }
     table[nbFicherOuvert].file=f;
     table[nbFicherOuvert].name=name;
-    table[nbFicherOuvert].secteur=secteur;
     nbFicherOuvert++;
+    return TRUE;
 }
 
 void FileSystem::removeOpenFile(int id) {
@@ -476,10 +482,8 @@ bool FileSystem::existFichier(const char* name){
     return FALSE;
 }
 
-int FileSystem::getId(int secteur){
-    for(int i=0;i<nbFicherOuvert;i++){
-        if(table[i].secteur==secteur)
-            return i;
-    }
-    return -1;
+int FileSystem::getIdLibre(){
+    if(nbFicherOuvert==10)
+        return -1;
+    return nbFicherOuvert;
 }

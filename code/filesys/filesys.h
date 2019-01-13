@@ -97,18 +97,18 @@ class FileSystem {
     void List();			// List all the files in the file system
 
     void Print();			// List all the files and their contents
+	
 	bool CreateRepository(const char *name);
+	void printRepository();
+	bool changeRepository(const char *name);
+	bool existRepository(int secteur);
 
-	void addOpenFile(OpenFile* f,const char *name,int secteur);
+	bool addOpenFile(OpenFile* f,const char *name,int secteur);
 	void removeOpenFile(int id);
 	int getId(OpenFile *f);
 	OpenFile* getOpenFile(int id);
-
-	void printRepository();
-	bool changeRepository(const char *name);
-	void ajoutFichierOuvert(OpenFile* f);
 	bool existFichier(const char* name);
-	int getId(int secteur);
+	int getIdLibre();
 
   private:
    OpenFile* freeMapFile;		// Bit map of free disk blocks,

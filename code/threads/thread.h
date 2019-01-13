@@ -74,6 +74,13 @@ extern void ThreadPrint (int arg);
 //  Some threads also belong to a user address space; threads
 //  that only run in the kernel have a NULL address space.
 
+#ifdef FILESYS		
+    typedef struct{
+        int id;
+        int secteur;
+    }Ent;
+#endif 
+
 class Thread
 {
   private:
@@ -114,9 +121,10 @@ class Thread
     }
 
     #ifdef FILESYS		
-    void addEntry(int entry);
+    void addEntry(int entry,int secteur);
     void removeEntry(int entry);
     bool existId(int id);
+    int getEntry(int id);
     #endif    
 
   private:
@@ -133,7 +141,7 @@ class Thread
     // Used internally by Fork()  
 
     #ifdef FILESYS		
-    int table[10];
+    Ent table[10];
     int nbFichierOuverts;
     #endif
 

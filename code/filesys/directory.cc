@@ -41,7 +41,6 @@ Directory::Directory(int size)
     tableSize = size;
     for (int i = 0; i < tableSize; i++){
         table[i].inUse = FALSE;
-        table[i].isFile=TRUE;
     }
 }
 

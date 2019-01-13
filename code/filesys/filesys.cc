@@ -142,6 +142,7 @@ FileSystem::FileSystem(bool format)
     } else {
     // if we are not formatting the disk, just open the files representing
     // the bitmap and directory; these are left open while Nachos is running
+        printf("%d         \n\n",nbFicherOuvert);
         freeMapFile = new OpenFile(FreeMapSector);
         //OpenFile *directoryFile = new OpenFile(DirectorySector);
         if (openFile.find(DirectorySector) != openFile.end())
@@ -245,9 +246,9 @@ FileSystem::Open(const char *name)
     sector = directory->Find(name); 
 
     if (sector >= 0){
-        if(!directory->isRepository(name)){
+        if(!existFichier(name) && !directory->isRepository(name)){
             openFile2 = new OpenFile(sector);	// name was found in directory
-            addOpenFile(openFile2);
+            addOpenFile(openFile2,name,sector);
         }
     } 		
 	 
@@ -271,7 +272,11 @@ FileSystem::Open(const char *name)
 
 bool
 FileSystem::Remove(const char *name)
-{ 
+{
+    if(existFichier(name)){
+        return FALSE;
+    } 
+
     Directory *directory;
     Directory *directory2;
     BitMap *freeMap;
@@ -287,13 +292,14 @@ FileSystem::Remove(const char *name)
     }
 
     if(directory->isRepository(name)){
-        OpenFile *file=new OpenFile(sector);
+        OpenFile *file=openFile.at(sector);
         directory2= new Directory(NumDirEntries);
         directory2->FetchFrom(file);
 
         if(!directory2->isEmpty() || !strncmp(".", name, FileNameMaxLen)){
             delete directory;
             delete directory2;
+            openFile.erase(sector);
             delete file;
             return FALSE;
         }
@@ -431,29 +437,20 @@ bool FileSystem::changeRepository(const char *name){
     return TRUE;
 }
 
-void FileSystem::addOpenFile(OpenFile* f) {
-    if(nbFicherOuvert!=10){
-        table[nbFicherOuvert].file=f;
-        table[nbFicherOuvert].duree=0;
-        nbFicherOuvert++;
+void FileSystem::addOpenFile(OpenFile* f,const char *name,int secteur) {
+    if(nbFicherOuvert==10){
+        printf("Erreur nombre Max de fichiers ouverts\n");
+        return;
     }
-    else{
-        int index=0,max=++table[0].duree;
-        for(int i=1;i<nbFicherOuvert;i++){
-            if(max<=++table[i].duree){
-                max=table[i].duree;
-                index=i;
-            }
-        }
-        delete table[index].file;
-        table[index].file=f;
-        table[index].duree=0;
-    }
+    table[nbFicherOuvert].file=f;
+    table[nbFicherOuvert].name=name;
+    table[nbFicherOuvert].secteur=secteur;
+    nbFicherOuvert++;
 }
 
 void FileSystem::removeOpenFile(int id) {
     for(int i=id;i<nbFicherOuvert-1;i++){
-        table[i].file=table[i+1].file;
+        table[i]=table[i+1];
     }
     nbFicherOuvert--;
 }
@@ -465,6 +462,23 @@ OpenFile* FileSystem::getOpenFile(int id) {
 int FileSystem::getId(OpenFile *f) {
     for(int i=0;i<nbFicherOuvert;i++){
         if(table[i].file==f)
+            return i;
+    }
+    return -1;
+}
+
+bool FileSystem::existFichier(const char* name){
+    for(int i=0;i<nbFicherOuvert;i++){
+        if(!strncmp(table[i].name, name, FileNameMaxLen)){
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+int FileSystem::getId(int secteur){
+    for(int i=0;i<nbFicherOuvert;i++){
+        if(table[i].secteur==secteur)
             return i;
     }
     return -1;

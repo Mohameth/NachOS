@@ -111,7 +111,7 @@ Print(char *name)
 #define FileName 	"TestFile"
 #define Contents 	"1234567890"
 #define ContentSize 	strlen(Contents)
-#define FileSize 	((int)(ContentSize * 50))
+#define FileSize 	((int)(ContentSize * 375))
 
 static void 
 FileWrite()
@@ -199,7 +199,7 @@ void testCD() {
     if (!fileSystem->changeRepository("..")) printf("ERREUR L \n");
 
     if (!fileSystem->Create("file", 5)) printf("ERREUR FILE CREATION \n");
-    if (!fileSystem->Remove("file")) printf("ERREUR FILE REMOVE \n");
+    if (!fileSystem->Remove("file")) printf("ERREUR FILE REMOVE \n");printf("heyyyyyy\n");
     fileSystem->printRepository();
     if (!fileSystem->Remove("test3")) printf("ERREUR FOLDER REMOVE \n");
     fileSystem->printRepository();

@@ -42,7 +42,8 @@ using namespace std;
 
 typedef struct{
 	OpenFile *file;
-	int duree;
+	const char *name;
+	int secteur;
 }ficherOuvert;
 
 #ifdef FILESYS_STUB 		// Temporarily implement file system calls as 
@@ -98,15 +99,16 @@ class FileSystem {
     void Print();			// List all the files and their contents
 	bool CreateRepository(const char *name);
 
-	void addOpenFile(OpenFile* f);
+	void addOpenFile(OpenFile* f,const char *name,int secteur);
 	void removeOpenFile(int id);
 	int getId(OpenFile *f);
 	OpenFile* getOpenFile(int id);
 
-	void changeRepository();
 	void printRepository();
 	bool changeRepository(const char *name);
 	void ajoutFichierOuvert(OpenFile* f);
+	bool existFichier(const char* name);
+	int getId(int secteur);
 
   private:
    OpenFile* freeMapFile;		// Bit map of free disk blocks,

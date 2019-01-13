@@ -46,6 +46,10 @@ Thread::Thread (const char *threadName)
     for (int r=NumGPRegs; r<NumTotalRegs; r++)
       userRegisters[r] = 0;
 #endif
+
+    #ifdef FILESYS
+    nbFichierOuverts=0;
+    #endif
 }
 
 //----------------------------------------------------------------------
@@ -418,5 +422,32 @@ int Thread::getTid() {
 }
 
 #endif
+
+#ifdef FILESYS	
+
+void Thread::addEntry(int entry){
+    if(nbFichierOuverts==10){
+        printf("Erreur nombre Max de fichiers ouverts dans le Thread\n");
+        return;
+    }
+    table[nbFichierOuverts++]=entry;
+}
+
+void Thread::removeEntry(int entry){
+    for(int i=entry;i<nbFichierOuverts-1;i++){
+        table[i]=table[i+1];
+    }
+    nbFichierOuverts--;
+}
+
+bool Thread::existId(int id){
+    for(int i=0;i<nbFichierOuverts;i++){
+        if(table[i]==id)
+            return true;
+    }
+    return false;
+}
+   
+#endif 
 
 

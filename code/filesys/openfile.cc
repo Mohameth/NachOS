@@ -31,6 +31,14 @@ OpenFile::OpenFile(int sector)
     hdr = new FileHeader;
     hdr->FetchFrom(sector);
     seekPosition = 0;
+
+    if(sector<=1)
+    return;
+
+    id=fileSystem->getId(sector);
+    
+    if(id>=0)
+    currentThread->addEntry(id);
 }
 
 //----------------------------------------------------------------------
@@ -39,7 +47,10 @@ OpenFile::OpenFile(int sector)
 //----------------------------------------------------------------------
 
 OpenFile::~OpenFile()
-{
+{  
+    int id2=fileSystem->getId(this);
+    if(id2>=0)
+    fileSystem->removeOpenFile(id2);
     delete hdr;
 }
 
@@ -73,18 +84,28 @@ OpenFile::Seek(int position)
 int
 OpenFile::Read(char *into, int numBytes)
 {
-   int result = ReadAt(into, numBytes, seekPosition);
-   seekPosition += result;
-   return result;
+    int id2=fileSystem->getId(this);
+
+    if(!currentThread->existId(id2))
+        return -1;
+
+    int result = ReadAt(into, numBytes, seekPosition);
+    seekPosition += result;
+    return result;
 }
 
 int
 OpenFile::Write(const char *into, int numBytes)
 {
    //printf("OpenFile:Write %s, %d\n", into, numBytes); 
-   int result = WriteAt(into, numBytes, seekPosition);
-   seekPosition += result;
-   return result;
+    int id2=fileSystem->getId(this);
+
+    if(!currentThread->existId(id2))
+        return -1;
+   
+    int result = WriteAt(into, numBytes, seekPosition);
+    seekPosition += result;
+    return result;
 }
 
 //----------------------------------------------------------------------

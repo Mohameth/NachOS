@@ -33,6 +33,7 @@ class FiablePostOffice {
 
     void ReSend();
 
+    int GetAddr();
   private:
     PostOffice * post;
     PacketHeader lpktHdr;

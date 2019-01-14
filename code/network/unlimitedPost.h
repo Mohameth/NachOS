@@ -28,6 +28,7 @@ class UnlimitedPostOffice {
     void PostalDelivery();	// Wait for incoming messages, 
 				// and then put them in the correct mailbox
 
+		int GetAddr();
   private:
     FiablePostOffice * fiablepost;
     

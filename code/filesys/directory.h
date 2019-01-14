@@ -73,6 +73,7 @@ class Directory {
 					//  names and their contents.
     void setToRepository(const char *name);
     bool isEmpty();
+    bool isRepository(const char *name);
 
   private:
     int tableSize;			// Number of directory entries

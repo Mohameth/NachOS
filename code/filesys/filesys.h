@@ -40,6 +40,12 @@
 #include <map>
 using namespace std;
 
+typedef struct{
+	OpenFile *file;
+	const char *name;
+	int secteur;
+}ficherOuvert;
+
 #ifdef FILESYS_STUB 		// Temporarily implement file system calls as 
 				// calls to UNIX, until the real file system
 				// implementation is available
@@ -91,23 +97,28 @@ class FileSystem {
     void List();			// List all the files in the file system
 
     void Print();			// List all the files and their contents
+	
 	bool CreateRepository(const char *name);
+	void printRepository();
+	bool changeRepository(const char *name);
+	bool existRepository(int secteur);
 
-	void addOpenFile(int id, OpenFile* f);
+	bool addOpenFile(OpenFile* f,const char *name,int secteur);
 	void removeOpenFile(int id);
-	int getUnusedId();
-
+	int getId(OpenFile *f);
 	OpenFile* getOpenFile(int id);
+	bool existFichier(const char* name);
+	int getIdLibre();
 
   private:
    OpenFile* freeMapFile;		// Bit map of free disk blocks,
 					// represented as a file
-   OpenFile* directoryFile;		// "Root" directory -- list of 
-					// file names, represented as a file
-	OpenFile* currentRepository;
-	
-	map<int,OpenFile*> openFiles; //fileId -> OpenFile
-   int openFileIdCounter;
+   //OpenFile* directoryFile;		// "Root" directory -- list of 
+					// file names, represented as a file					
+	map<int,OpenFile*> openFile;				
+	int sectorCurrentRepository;
+	ficherOuvert table[10];
+	int nbFicherOuvert;
 };
 
 #endif // FILESYS

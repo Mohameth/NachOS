@@ -80,6 +80,8 @@
 FileSystem::FileSystem(bool format)
 { 
     DEBUG('f', "Initializing the file system.\n");
+    sectorCurrentRepository=DirectorySector;
+    nbFicherOuvert=0;
     if (format) {
         BitMap *freeMap = new BitMap(NumSectors);
         Directory *directory = new Directory(NumDirEntries);
@@ -113,7 +115,7 @@ FileSystem::FileSystem(bool format)
     // while Nachos is running.
 
         freeMapFile = new OpenFile(FreeMapSector);
-        directoryFile = new OpenFile(DirectorySector);
+        OpenFile *directoryFile = new OpenFile(DirectorySector);
      
     // Once we have the files "open", we can write the initial version
     // of each file back to disk.  The directory at this point is completely
@@ -126,7 +128,7 @@ FileSystem::FileSystem(bool format)
 
 	freeMap->WriteBack(freeMapFile);	 // flush changes to disk
 	directory->WriteBack(directoryFile);
-    currentRepository=directoryFile;
+    openFile.insert(pair<int,OpenFile*>(DirectorySector,directoryFile));
 
 	if (DebugIsEnabled('f')) {
 	    freeMap->Print();
@@ -140,8 +142,13 @@ FileSystem::FileSystem(bool format)
     } else {
     // if we are not formatting the disk, just open the files representing
     // the bitmap and directory; these are left open while Nachos is running
+        printf("%d         \n\n",nbFicherOuvert);
         freeMapFile = new OpenFile(FreeMapSector);
-        directoryFile = new OpenFile(DirectorySector);
+        //OpenFile *directoryFile = new OpenFile(DirectorySector);
+        if (openFile.find(DirectorySector) != openFile.end())
+        return;
+        OpenFile *directoryFile=new OpenFile(DirectorySector);
+        openFile.insert(pair<int,OpenFile*>(DirectorySector,directoryFile));
     }
 }
 
@@ -186,7 +193,7 @@ FileSystem::Create(const char *name, int initialSize)
     DEBUG('f', "Creating file %s, size %d\n", name, initialSize);
 
     directory = new Directory(NumDirEntries);
-    directory->FetchFrom(directoryFile);
+    directory->FetchFrom(openFile.at(sectorCurrentRepository));
 
     if (directory->Find(name) != -1)
       success = FALSE;			// file is already in directory
@@ -206,7 +213,7 @@ FileSystem::Create(const char *name, int initialSize)
 	    	success = TRUE;
 		// everthing worked, flush all changes back to disk
     	    	hdr->WriteBack(sector); 		
-    	    	directory->WriteBack(directoryFile);
+    	    	directory->WriteBack(openFile.at(sectorCurrentRepository));
     	    	freeMap->WriteBack(freeMapFile);
 	    }
             delete hdr;
@@ -231,16 +238,23 @@ OpenFile *
 FileSystem::Open(const char *name)
 { 
     Directory *directory = new Directory(NumDirEntries);
-    OpenFile *openFile = NULL;
+    OpenFile *openFile2 = NULL;
     int sector;
 
     DEBUG('f', "Opening file %s\n", name);
-    directory->FetchFrom(directoryFile);
+    directory->FetchFrom(openFile.at(sectorCurrentRepository));
     sector = directory->Find(name); 
-    if (sector >= 0) 		
-	openFile = new OpenFile(sector);	// name was found in directory 
+
+    if (sector >= 0){
+        if(!existFichier(name) && !directory->isRepository(name)){
+            openFile2 = new OpenFile(sector);	// name was found in directory
+            if(!addOpenFile(openFile2,name,sector))
+            return NULL;
+        }
+    } 		
+	 
     delete directory;
-    return openFile;				// return NULL if not found
+    return openFile2;				// return NULL if not found
 }
 
 //----------------------------------------------------------------------
@@ -259,29 +273,37 @@ FileSystem::Open(const char *name)
 
 bool
 FileSystem::Remove(const char *name)
-{ 
+{
+    if(existFichier(name)){
+        return FALSE;
+    } 
+
     Directory *directory;
+    Directory *directory2;
     BitMap *freeMap;
     FileHeader *fileHdr;
     int sector;
+    OpenFile *file=NULL;
     
     directory = new Directory(NumDirEntries);
-    directory->FetchFrom(directoryFile);
+    directory->FetchFrom(openFile.at(sectorCurrentRepository));
     sector = directory->Find(name);
     if (sector == -1) {
        delete directory;
        return FALSE;			 // file not found 
     }
 
-    OpenFile *file=new OpenFile(sector);
-    Directory *directory2= new Directory(NumDirEntries);
-    directory2->FetchFrom(file);
+    if(directory->isRepository(name)){
+        file=openFile.at(sector);
+        directory2= new Directory(NumDirEntries);
+        directory2->FetchFrom(file);
 
-    if(!directory2->isEmpty()){
-        delete directory;
-        delete directory2;
-        delete file;
-        return FALSE;
+        if(!directory2->isEmpty() || !strncmp("..", name, FileNameMaxLen) || !strncmp(".", name, FileNameMaxLen)){
+            delete directory;
+            delete directory2;            
+            delete file;
+            return FALSE;
+        }
     }
 
     fileHdr=new FileHeader;
@@ -295,7 +317,13 @@ FileSystem::Remove(const char *name)
     directory->Remove(name);
 
     freeMap->WriteBack(freeMapFile);		// flush to disk
-    directory->WriteBack(directoryFile);        // flush to disk
+    directory->WriteBack(openFile.at(sectorCurrentRepository));      // flush to disk
+    
+    if(directory->isRepository(name)){
+        openFile.erase(sector);
+        delete directory2;            
+        delete file;
+    }   
     delete fileHdr;
     delete directory;
     delete freeMap;
@@ -312,7 +340,7 @@ FileSystem::List()
 {
     Directory *directory = new Directory(NumDirEntries);
 
-    directory->FetchFrom(directoryFile);
+    directory->FetchFrom(openFile.at(sectorCurrentRepository));
     directory->List();
     delete directory;
 }
@@ -340,13 +368,13 @@ FileSystem::Print()
     bitHdr->Print();
 
     printf("Directory file header:\n");
-    dirHdr->FetchFrom(DirectorySector);
+    dirHdr->FetchFrom(sectorCurrentRepository);
     dirHdr->Print();
 
     freeMap->FetchFrom(freeMapFile);
     freeMap->Print();
 
-    directory->FetchFrom(directoryFile);
+    directory->FetchFrom(openFile.at(sectorCurrentRepository));
     directory->Print();
 
     delete bitHdr;
@@ -362,38 +390,100 @@ FileSystem::CreateRepository(const char *name){
     return FALSE;
 
     Directory *directory = new Directory(NumDirEntries);
-    directory->FetchFrom(directoryFile);
+    directory->FetchFrom(openFile.at(sectorCurrentRepository));
     directory->setToRepository(name);
 
     Directory *directory2 = new Directory(NumDirEntries);
-    OpenFile *file=new OpenFile(directory->Find(name));
+    int secteur=directory->Find(name);
+    OpenFile *file=new OpenFile(secteur);
     directory2->FetchFrom(file);
 
-    directory2->Add("..",directory->Find("."));
-    directory2->Add(".",directory->Find(name));
+    directory2->Add("..",sectorCurrentRepository);
+    directory2->Add(".",secteur);
+    directory2->setToRepository("..");
+    directory2->setToRepository(".");
 
-    directory->WriteBack(directoryFile);
-    delete file;
+    openFile.insert(pair<int,OpenFile*>(secteur,file));
+
+    directory->WriteBack(openFile.at(sectorCurrentRepository));
+    directory2->WriteBack(openFile.at(secteur));
+
+    delete directory2;
 
     return TRUE;
 }
 
-void 
-FileSystem::addOpenFile(int id, OpenFile* f) {
-    openFiles.insert(pair<int,OpenFile*>(id,f));
+void FileSystem::printRepository(){
+    Directory *directory = new Directory(NumDirEntries);
+    directory->FetchFrom(openFile.at(sectorCurrentRepository));
+    directory->List();
+    delete directory;
 }
 
-void 
-FileSystem::removeOpenFile(int id) {
-    openFiles.erase(id);
+bool FileSystem::changeRepository(const char *name){
+    Directory *directory = new Directory(NumDirEntries);
+    directory->FetchFrom(openFile.at(sectorCurrentRepository));
+    
+    if(directory->Find(name)==-1 || !directory->isRepository(name)){
+        delete directory;
+        return FALSE;
+    }
+    
+    sectorCurrentRepository=directory->Find(name);
+    printf("SECTEUR -- %d\n", sectorCurrentRepository);
+
+    if (openFile.find(sectorCurrentRepository) == openFile.end()){
+        printf("Insertion en cours ... \n");
+        openFile.insert(pair<int,OpenFile*>(sectorCurrentRepository,new OpenFile(sectorCurrentRepository)));
+    }
+    delete directory;
+    return TRUE;
 }
 
-OpenFile* 
-FileSystem::getOpenFile(int id) {
-    return openFiles.at(id);
+bool FileSystem::existRepository(int secteur){
+    return openFile.find(sectorCurrentRepository)!=openFile.end();
 }
 
-int 
-FileSystem::getUnusedId() {
-    return ++openFileIdCounter;
+bool FileSystem::addOpenFile(OpenFile* f,const char *name,int secteur) {
+    if(nbFicherOuvert==10){
+        return FALSE;
+    }
+    table[nbFicherOuvert].file=f;
+    table[nbFicherOuvert].name=name;
+    nbFicherOuvert++;
+    return TRUE;
+}
+
+void FileSystem::removeOpenFile(int id) {
+    for(int i=id;i<nbFicherOuvert-1;i++){
+        table[i]=table[i+1];
+    }
+    nbFicherOuvert--;
+}
+
+OpenFile* FileSystem::getOpenFile(int id) {
+    return table[id].file;
+}
+
+int FileSystem::getId(OpenFile *f) {
+    for(int i=0;i<nbFicherOuvert;i++){
+        if(table[i].file==f)
+            return i;
+    }
+    return -1;
+}
+
+bool FileSystem::existFichier(const char* name){
+    for(int i=0;i<nbFicherOuvert;i++){
+        if(!strncmp(table[i].name, name, FileNameMaxLen)){
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+int FileSystem::getIdLibre(){
+    if(nbFicherOuvert==10)
+        return -1;
+    return nbFicherOuvert;
 }

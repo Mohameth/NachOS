@@ -209,6 +209,39 @@ UserThreadJoin:
 	j	$31
 	.end UserThreadJoin
 
+	.globl Seek
+	.ent	Seek
+Seek:
+	addiu $2,$0,SC_Seek
+	syscall
+	j	$31
+	.end Seek 
+
+	.globl CreateRepository
+	.ent	CreateRepository
+CreateRepository:
+	addiu $2,$0,SC_CreateRepository
+	syscall
+	j	$31
+	.end CreateRepository
+
+	.globl ChangeRepository
+	.ent	ChangeRepository
+ChangeRepository:
+	addiu $2,$0,SC_ChangeRepository
+	syscall
+	j	$31
+	.end ChangeRepository
+
+	.globl PrintRepository
+	.ent	PrintRepository
+PrintRepository:
+	addiu $2,$0,SC_PrintRepository
+	syscall
+	j	$31
+	.end PrintRepository
+
+
 /* dummy function to keep gcc happy */
         .globl  __main
         .ent    __main

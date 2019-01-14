@@ -37,8 +37,12 @@
 #define SC_GetInt    16
 #define SC_UserThreadCreate 17
 #define SC_UserThreadExit   18
-#define SC_UserThreadJoin 19
+#define SC_UserThreadJoin   19
 #define SC_ForkExec 20
+#define SC_Seek     21
+#define SC_CreateRepository 22
+#define SC_ChangeRepository 23
+#define SC_PrintRepository  24
 
 
 #ifdef IN_USER_MODE
@@ -123,7 +127,14 @@ int Read (char *buffer, int size, OpenFileId id);
 /* Close the file, we're done reading and writing to it. */
 void Close (OpenFileId id);
 
+/* Set the position from which to start reading/writing */
+void Seek(int position, OpenFileId id);
 
+int CreateRepository(const char *name);
+
+int ChangeRepository(const char *name);
+
+void PrintRepository();
 
 /* User-level thread operations: Fork and Yield.  To allow multiple
  * threads to run within a user program. 

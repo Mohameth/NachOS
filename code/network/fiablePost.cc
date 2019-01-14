@@ -93,8 +93,8 @@ FiablePostOffice::Send(PacketHeader pktHdr, MailHeader mailHdr, const char* data
     
         //post->Send(outPktHdr,outMailHdr,ackmess);
     }
-    else
-        printf("message non reçu : %s reçu\n",buffer);
+    //else
+      //  printf("message non reçu : %s reçu\n",buffer);
 }
 
 //----------------------------------------------------------------------
@@ -151,8 +151,8 @@ FiablePostOffice::SendAck(PacketHeader pktHdr, MailHeader mailHdr, const char* d
         ack=true;
         printf("ack reçu\n");
     }
-    //else
-        //printf("ack non reçu : %s reçu\n",buffer);
+   // else
+     //   printf("ack non reçu : %s reçu\n",buffer);
 }
 
 void FiablePostOffice::CheckAckArrive() {

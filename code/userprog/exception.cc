@@ -25,6 +25,9 @@
 #include "system.h"
 #include "syscall.h"
 #include "userthread.h"
+#include "network.h"
+// #include "unlimitedPost.h"
+// #include "post.h"
 
 //----------------------------------------------------------------------
 // UpdatePC : Increments the Program Counter register in order to resume
@@ -141,11 +144,52 @@ ExceptionHandler (ExceptionType which) {
         break;
       }
 
+      case SC_Receive:
+      {
+        char *data = (char *)machine->ReadRegister(4);
+        int box = 0;
+
+        char buf[MaxMailSize];
+        PacketHeader pktHdr;
+        MailHeader mailHdr;
+
+        //void UnlimitedPostOffice::Receive(int box, PacketHeader *pktHdr, MailHeader *mailHdr, char *data);
+        unlimitedPostOffice->Receive(box, &pktHdr, &mailHdr, buf);
+        for (unsigned int i = 0; i < MaxMailSize; i++)
+        {
+          machine->WriteMem((int)(data + i), 1, (int)buf[i]);
+        }
+        break;
+      }
+
+      case SC_Send:
+      {
+        int to = machine->ReadRegister(4);
+        int saddr = machine->ReadRegister(5);
+        char data[MaxMailSize];
+        synchconsole->copyStringFromMachine(saddr, data, MaxMailSize - 1);
+
+        PacketHeader pktHdr;
+        pktHdr.to = to;
+
+        MailHeader mailHdr;
+        mailHdr.to = 0;
+        mailHdr.from = 1;
+        mailHdr.length = strlen(data) + 1;
+
+        //void UnlimitedPostOffice::Send(PacketHeader pktHdr, MailHeader mailHdr, const char *data);
+        unlimitedPostOffice->Send(pktHdr, mailHdr, data);
+        break;
+      }
+
       case SC_GetChar: {
         char c = synchconsole->SynchGetChar();
         machine->WriteRegister(2,(int) c);
         break;
       }
+
+      
+
 
       case SC_GetString: {
         int addr = machine->ReadRegister(4);
@@ -222,8 +266,9 @@ ExceptionHandler (ExceptionType which) {
         synchconsole->copyStringFromMachine(addr, name, MAX_STRING_SIZE-1);
 
         bool res = fileSystem->Create(name, 10);//TODO: gerer initialSize
-        if (res)  printf("Creation de fichier vide reussi\n");
-        else      printf("ERREUR DE CREATION \n");
+        //if (res)  printf("Creation de fichier vide reussi\n");
+        //else      printf("ERREUR DE CREATION \n");
+        machine->WriteRegister(2, res);
         break;
       }
 
@@ -263,7 +308,8 @@ ExceptionHandler (ExceptionType which) {
         
         f->Write(value, size);
 
-        printf("Ecriture de %d octets (\"%s\") sur le fichier d'id %d \n", size, value, fileId);
+        //printf("Ecriture de %d octets (\"%s\") sur le fichier d'id %d \n", size, value, fileId);
+        machine->WriteRegister(2, size);
         break;
       }
 

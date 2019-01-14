@@ -68,10 +68,10 @@ UnlimitedPostOffice::Send(PacketHeader pktHdr, MailHeader mailHdr, const char* d
     for (int i = 0; i < nbMail; i++) {
         if (i == nbMail-1) {
             int sizeRest = mailHdr.length % MaxMailSize;
-            strncpy(outdata,data+(i*MaxMailSize),sizeRest+1);
+            memcpy(outdata,data+(i*MaxMailSize),sizeRest+1);
             outMailHdr.length = sizeRest+1;
         } else {
-            strncpy(outdata,data+(i*MaxMailSize),MaxMailSize);
+            memcpy(outdata,data+(i*MaxMailSize),MaxMailSize);
         }
         
 
@@ -100,12 +100,24 @@ UnlimitedPostOffice::Receive(int box, PacketHeader *pktHdr,
 {
     int nbMail;
     fiablepost->Receive(box,pktHdr,mailHdr,(char *) &nbMail); // reception du nombre de mail à recevoire
+    
+    // if (nbMail == 1) {
+    //     fiablepost->Receive(box,pktHdr,mailHdr,data);
+    //     return;
+    // }
+    printf("nbMail %d\n",nbMail);
 
-    char outdata[MaxMailSize];
+
+    char outdata[MaxMailSize]; // buffer pour chaque mail
+
 
     for (int i = 0; i < nbMail; i++) {
-        fiablepost->Receive(box,pktHdr,mailHdr,outdata);
+        fiablepost->Receive(box,pktHdr,mailHdr,outdata); // reception du message
 
-        strncpy(data+(i*MaxMailSize),outdata,mailHdr->length);
+        memcpy(data+(i*MaxMailSize),outdata,mailHdr->length); // copie des données reçu dans le relutat final
     }
+}
+
+int UnlimitedPostOffice::GetAddr() {
+    return fiablepost->GetAddr();
 }

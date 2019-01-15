@@ -149,16 +149,30 @@ ExceptionHandler (ExceptionType which) {
         char *data = (char *)machine->ReadRegister(4);
         int box = 0;
 
-        char buf[MaxMailSize];
+        char buf[MaxMailSize*4];
         PacketHeader pktHdr;
         MailHeader mailHdr;
 
         //void UnlimitedPostOffice::Receive(int box, PacketHeader *pktHdr, MailHeader *mailHdr, char *data);
         unlimitedPostOffice->Receive(box, &pktHdr, &mailHdr, buf);
-        for (unsigned int i = 0; i < MaxMailSize; i++)
+        for (unsigned int i = 0; i < MaxMailSize*4; i++)
         {
           machine->WriteMem((int)(data + i), 1, (int)buf[i]);
         }
+        break;
+      }
+
+      case SC_ReceiveInt:
+      {
+        int box = 0;
+
+        int buf;
+        PacketHeader pktHdr;
+        MailHeader mailHdr;
+
+        //void UnlimitedPostOffice::Receive(int box, PacketHeader *pktHdr, MailHeader *mailHdr, char *data);
+        unlimitedPostOffice->Receive(box, &pktHdr, &mailHdr, (char *)&buf);
+        machine->WriteRegister(2,buf);
         break;
       }
 
@@ -166,8 +180,8 @@ ExceptionHandler (ExceptionType which) {
       {
         int to = machine->ReadRegister(4);
         int saddr = machine->ReadRegister(5);
-        char data[MaxMailSize];
-        synchconsole->copyStringFromMachine(saddr, data, MaxMailSize - 1);
+        char data[MaxMailSize*4];
+        synchconsole->copyStringFromMachine(saddr, data, MaxMailSize*4 - 1);
 
         PacketHeader pktHdr;
         pktHdr.to = to;
@@ -179,6 +193,24 @@ ExceptionHandler (ExceptionType which) {
 
         //void UnlimitedPostOffice::Send(PacketHeader pktHdr, MailHeader mailHdr, const char *data);
         unlimitedPostOffice->Send(pktHdr, mailHdr, data);
+        break;
+      }
+
+      case SC_SendInt:
+      {
+        int to = machine->ReadRegister(4);
+        int data = machine->ReadRegister(5);
+
+        PacketHeader pktHdr;
+        pktHdr.to = to;
+
+        MailHeader mailHdr;
+        mailHdr.to = 0;
+        mailHdr.from = 1;
+        mailHdr.length = sizeof(data);
+
+        //void UnlimitedPostOffice::Send(PacketHeader pktHdr, MailHeader mailHdr, const char *data);
+        unlimitedPostOffice->Send(pktHdr, mailHdr, (char*)&data);
         break;
       }
 
@@ -263,9 +295,11 @@ ExceptionHandler (ExceptionType which) {
       case SC_Create: {
         char name[MAX_STRING_SIZE];
         int addr = machine->ReadRegister(4);
+        int size = machine->ReadRegister(5);
+
         synchconsole->copyStringFromMachine(addr, name, MAX_STRING_SIZE-1);
 
-        bool res = fileSystem->Create(name, 10);//TODO: gerer initialSize
+        bool res = fileSystem->Create(name, size);//TODO: gerer initialSize
         //if (res)  printf("Creation de fichier vide reussi\n");
         //else      printf("ERREUR DE CREATION \n");
         machine->WriteRegister(2, res);
@@ -291,7 +325,7 @@ ExceptionHandler (ExceptionType which) {
         }
 
         machine->WriteRegister(2, nb);
-        printf("Lecture de %d octets = %s, id = %d \n", nb, value, fileId);
+        //printf("Lecture de %d octets = %s, id = %d \n", nb, value, fileId);
 
         break;
       }

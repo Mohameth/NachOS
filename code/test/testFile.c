@@ -4,8 +4,8 @@ int
 main ()
 {
     //PutString("Test d'ouverture\n");
-    Create("f1.txt");
-    Create("f2.txt");
+    Create("f1.txt",10);
+    Create("f2.txt",10);
     OpenFileId f1 = Open("f1.txt");
     OpenFileId f2 = Open("f2.txt");
 

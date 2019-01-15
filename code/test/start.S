@@ -249,6 +249,22 @@ Send:
 	j	$31
 	.end Send
 
+	.globl ReceiveInt
+	.ent	ReceiveInt
+ReceiveInt:
+	addiu $2,$0,SC_ReceiveInt
+	syscall
+	j	$31
+	.end ReceiveInt
+
+	.globl SendInt
+	.ent	SendInt
+SendInt:
+	addiu $2,$0,SC_SendInt
+	syscall
+	j	$31
+	.end SendInt
+
 	.globl PrintRepository
 	.ent	PrintRepository
 PrintRepository:

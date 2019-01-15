@@ -3,8 +3,18 @@
 
 int main()
 {
-    char * data = "";
+    char data[14];
     Receive(data);
+    PutString("Valeur: ");
     PutString(data);
-    ASSERT_TEST(data[0]=='a');
+
+    char longData[40*4];
+    Receive(longData);
+    PutString("Long text: ");
+    PutString(longData);
+    PutString(longData+50);
+    PutString(longData+100);
+    PutString(longData+150);
+
+    Exit(0);
 }

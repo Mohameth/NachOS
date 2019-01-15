@@ -45,6 +45,8 @@
 #define SC_PrintRepository  24
 #define SC_Receive 25
 #define SC_Send 26
+#define SC_ReceiveInt 27
+#define SC_SendInt 28
 
 #ifdef IN_USER_MODE
 
@@ -107,7 +109,7 @@ typedef int OpenFileId;
 #define ConsoleOutput	1
 
 /* Create a Nachos file, with "name" */
-int Create (char *name);
+int Create (char *name, int size);
 
 /* Open the Nachos file "name", and return an "OpenFileId" that can 
  * be used to read and write to the file.
@@ -193,6 +195,8 @@ void UserThreadJoin(int tid);
 
 void Send(int to, const char *data);
 void Receive(char *data);
+void SendInt(int to, const int data);
+int ReceiveInt();
 
 #endif // IN_USER_MODE
 

@@ -142,7 +142,6 @@ FileSystem::FileSystem(bool format)
     } else {
     // if we are not formatting the disk, just open the files representing
     // the bitmap and directory; these are left open while Nachos is running
-        printf("%d         \n\n",nbFicherOuvert);
         freeMapFile = new OpenFile(FreeMapSector);
         //OpenFile *directoryFile = new OpenFile(DirectorySector);
         if (openFile.find(DirectorySector) != openFile.end())

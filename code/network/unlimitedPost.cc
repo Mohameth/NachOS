@@ -105,7 +105,7 @@ UnlimitedPostOffice::Receive(int box, PacketHeader *pktHdr,
     //     fiablepost->Receive(box,pktHdr,mailHdr,data);
     //     return;
     // }
-    printf("nbMail %d\n",nbMail);
+    if (DebugIsEnabled('n')) printf("nbMail %d\n",nbMail);
 
 
     char outdata[MaxMailSize]; // buffer pour chaque mail

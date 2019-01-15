@@ -30,21 +30,21 @@ void FileTransfert::Serveur() {
 
     // attente d'une commande.
     char cmd[4];
-    postOffice->Receive(0,&inPktHdr,&inMailHdr,cmd);
+    unlimitedPostOffice->Receive(0,&inPktHdr,&inMailHdr,cmd);
 
     outPktHdr.from = unlimitedPost->GetAddr();
     outPktHdr.to = inPktHdr.from;
     outMailHdr.from = inMailHdr.to;
     outMailHdr.to = inMailHdr.from;
 
-    printf("commande reçu %s\n",cmd);
+    if (DebugIsEnabled('n')) printf("commande reçu %s\n",cmd);
 
     if (!strcmp(cmd,"Get")) { // si cmd == Get
     
     //  reception du nom de fichier.
     char fileName[35];
-    postOffice->Receive(0,&inPktHdr,&inMailHdr,fileName);
-    printf("nom de fichier reçu %s\n",fileName);
+    unlimitedPostOffice->Receive(0,&inPktHdr,&inMailHdr,fileName);
+    if (DebugIsEnabled('n')) printf("nom de fichier reçu %s\n",fileName);
     
     // (void) inMailHdr;
     // (void) inPktHdr;
@@ -58,34 +58,58 @@ void FileTransfert::Serveur() {
     //  envoi de la taille ou -1 si fichier inexistant
     if (file == NULL) {
         int errorSize = -1;
-        printf("%s not found\n",fileName);
+        if (DebugIsEnabled('n')) printf("%s not found\n",fileName);
         outMailHdr.length = sizeof(int);
-        postOffice->Send(outPktHdr,outMailHdr,(char *) &errorSize);
+        unlimitedPostOffice->Send(outPktHdr,outMailHdr,(char *) &errorSize);
         return;
     }
     int size = file->Length();
     outMailHdr.length = sizeof(int);
-    printf("envoi de la taille\n");
-    postOffice->Send(outPktHdr,outMailHdr,(char *) &size);
+    DEBUG('n',"envoi de la taille\n");
+    unlimitedPostOffice->Send(outPktHdr,outMailHdr,(char *) &size);
 
     //  lecture du fichier
     char donne[size];
     file->Read(donne,size);
 
     //  envoi du fichier
-    printf("envoi du fichier\n");
+    DEBUG('n',"envoi du fichier\n");
+    outPktHdr.from = unlimitedPost->GetAddr();
+    outPktHdr.to = inPktHdr.from;
     outMailHdr.length = size;
-    postOffice->Send(outPktHdr,outMailHdr,donne);
+    unlimitedPostOffice->Send(outPktHdr,outMailHdr,donne);
 
     delete file;
 
     } else if (!strcmp(cmd,"Put")) { // si cmd == Put
     
     //  reception du nom du fichier
+     char fileName[35];
+    unlimitedPostOffice->Receive(0,&inPktHdr,&inMailHdr,fileName);
+    if (DebugIsEnabled('n')) printf("nom de fichier reçu %s\n",fileName);
+
     //  reception de la taille du fichier
+     int taille;
+    unlimitedPostOffice->Receive(0,&inPktHdr,&inMailHdr,(char *) &taille); //unlimited post inutilisable pour un int
+    if (DebugIsEnabled('n')) printf("taille reçu %d\n",taille);
+    if (taille == -1)
+        return;
+
     //  creation du fichier sur le disque.
+    OpenFile* file;
+    fileSystem->Create(fileName,taille);
+    file = fileSystem->Open(fileName);
+    if (file == NULL)
+        return;
+
     //  reception du fichier (via UnlimitedPost)
-    //  ecriture dans le fichier
+    char donnee[taille];
+    unlimitedPostOffice->Receive(0,&inPktHdr,&inMailHdr,donnee);
+    if (DebugIsEnabled('n')) printf("reçu %s\n",donnee);
+
+
+    // ecriture dans le fichier
+    file->Write(donnee,taille);
 
     }
     
@@ -105,21 +129,21 @@ int FileTransfert::ClientGet(int farAddr, const char* fileName) {
     outMailHdr.length = strlen(cmd) + 1;
 
     // envoi commande Get au serveur.
-    printf("envoi de Get\n");
-    postOffice->Send(outPktHdr,outMailHdr,cmd);
+    if (DebugIsEnabled('n')) printf("envoi de Get\n");
+    unlimitedPostOffice->Send(outPktHdr,outMailHdr,cmd);
 
     // envoi du nom de fichier au serveur.
-    printf("envoi de nom de ficjier\n");
+    if (DebugIsEnabled('n')) printf("envoi de nom de ficjier\n");
     outMailHdr.length = strlen(fileName);
-    postOffice->Send(outPktHdr,outMailHdr,fileName);
+    unlimitedPostOffice->Send(outPktHdr,outMailHdr,fileName);
 
     // (void) inMailHdr;
     // (void) inPktHdr;
 
     // // reception de la taille du fichier
     int taille;
-    postOffice->Receive(1,&inPktHdr,&inMailHdr,(char *) &taille); //unlimited post inutilisable pour un int
-    printf("taille reçu %d\n",taille);
+    unlimitedPostOffice->Receive(1,&inPktHdr,&inMailHdr,(char *) &taille); //unlimited post inutilisable pour un int
+    if (DebugIsEnabled('n')) printf("taille reçu %d\n",taille);
     if (taille == -1)
         return -1;
 
@@ -132,8 +156,10 @@ int FileTransfert::ClientGet(int farAddr, const char* fileName) {
 
     // reception du fichier (via UnlimitedPost)
     char donnee[taille];
-    postOffice->Receive(1,&inPktHdr,&inMailHdr,donnee);
-    printf("reçu %s\n",donnee);
+    outPktHdr.from = unlimitedPost->GetAddr();
+    outPktHdr.to = farAddr;	
+    unlimitedPostOffice->Receive(1,&inPktHdr,&inMailHdr,donnee);
+    if (DebugIsEnabled('n')) printf("reçu %s\n",donnee);
 
 
     // ecriture dans le fichier
@@ -145,14 +171,55 @@ int FileTransfert::ClientGet(int farAddr, const char* fileName) {
 }
 
 int FileTransfert::ClientPut(int farAddr, const char* fileName) {
+    PacketHeader outPktHdr;
+    MailHeader outMailHdr;
 
+    const char * cmd ="Put";
+    outPktHdr.from = unlimitedPost->GetAddr();
+    outPktHdr.to = farAddr;		
+    outMailHdr.to = 0;
+    outMailHdr.from = 1;
+    outMailHdr.length = strlen(cmd) + 1;
+
+    // envoi commande Put au serveur.
+    DEBUG('n',"envoi de Put\n");
+    unlimitedPostOffice->Send(outPktHdr,outMailHdr,cmd);
+
+    // envoi du nom de fichier au serveur.
+    DEBUG('n',"envoi de nom de ficjier\n");
+    outMailHdr.length = strlen(fileName);
+    unlimitedPostOffice->Send(outPktHdr,outMailHdr,fileName);
 
     // ouverture du fichier
-    // envoi commande Put.
-    // envoi du nom du fichier
-    // envoi de la taille
-    // envoi du fichier (via UnlimitedPost)
-    return -1;
+    OpenFile* file;
+    file = fileSystem->Open(fileName);
+
+    //  envoi de la taille ou -1 si fichier inexistant
+    if (file == NULL) {
+        int errorSize = -1;
+        if (DebugIsEnabled('n')) printf("%s not found\n",fileName);
+        outMailHdr.length = sizeof(int);
+        unlimitedPostOffice->Send(outPktHdr,outMailHdr,(char *) &errorSize);
+        return -1;
+    }
+    int size = file->Length();
+    outMailHdr.length = sizeof(int);
+    DEBUG('n',"envoi de la taille\n");
+    unlimitedPostOffice->Send(outPktHdr,outMailHdr,(char *) &size);
+
+
+    //  lecture du fichier
+    char donne[size];
+    file->Read(donne,size);
+
+    //  envoi du fichier
+    DEBUG('n',"envoi du fichier\n");
+    outMailHdr.length = size;
+    unlimitedPostOffice->Send(outPktHdr,outMailHdr,donne);
+
+    delete file;
+    return 0;
+    //return -1;
 
 }
 

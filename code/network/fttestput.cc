@@ -34,29 +34,51 @@ void
 FileTest(int farAddr)
 {
     if (farAddr != 0) { //client
-        int ret = fileTransfert->ClientGet(farAddr,"placeholder");
-        printf("code ret : %d\n",ret);
         OpenFile* file;
-        file = fileSystem->Open("placeholder");
+        fileSystem->Create("placeholderp",10);
+        file = fileSystem->Open("placeholderp");
         if (file == NULL) {
             printf("not found\n");
         } else {
-            char mess[248];
-            file->Read(mess,248);
-            printf("reçu %s\n",mess);
-        }
-    } else {
-        OpenFile* file;
-        fileSystem->Create("placeholder",248);
-        file = fileSystem->Open("placeholder");
-        if (file == NULL) {
-            printf("not found\n");
-        } else {
-            const char* mess = "Hello There !!!\nNope le coup du Ack de ses morts\nD'après le monde de l'internet c'est bien ce que vous avez fait qu'il faut faire pour instancier la map\nC'est cppreferencies qui l'a dit donc ça doit être bonJe comprends pas c'est ouf, posdkjksq";
-            file->Write(mess,247);
+            const char* mess = "Hello Put";
+            file->Write(mess,9);
             delete file;
-            fileTransfert->Serveur();
+            int ret = fileTransfert->ClientPut(farAddr,"placeholderp");
+            printf("code ret : %d\n",ret);
         }
-    }
+
+        // int ret = fileTransfert->ClientGet(farAddr,"placeholder");
+        // printf("code ret : %d\n",ret);
+        // OpenFile* file;
+        // file = fileSystem->Open("placeholder");
+        // if (file == NULL) {
+        //     printf("not found\n");
+        // } else {
+        //     char mess[10];
+        //     file->Read(mess,10);
+        //     printf("reçu %s\n",mess);
+        
+    } else {
+        // OpenFile* file;
+        // fileSystem->Create("placeholder",10);
+        // file = fileSystem->Open("placeholder");
+        // if (file == NULL) {
+        //     printf("not found\n");
+        // } else {
+        //     const char* mess = "Hello you";
+        //     file->Write(mess,9);
+        //     delete file;
+            fileTransfert->Serveur();
+            OpenFile* file;
+            file = fileSystem->Open("placeholder");
+            if (file == NULL) {
+                printf("not found\n");
+            } else {
+                char mess[10];
+                file->Read(mess,10);
+                printf("reçu %s\n",mess);
+            }
+        }
+    
     interrupt->Halt();
 }

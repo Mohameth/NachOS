@@ -90,7 +90,6 @@ ExceptionHandler (ExceptionType which) {
         //printf("HALT");
         attendreThread(); // attente des threads en cour d'execution
         DEBUG('a', "Shutdown, initiated by user program.\n");
-        
         interrupt->Halt ();
         break;
       }
@@ -99,7 +98,7 @@ ExceptionHandler (ExceptionType which) {
         //printf("EXIT");
         attendreThread(); // attente des threads en cour d'execution
         DEBUG('a', "User Program terminate\n");
-        printf("exit with status %d\n",machine->ReadRegister(4));
+        printf("exit with status %d, thread : %s\n",machine->ReadRegister(4), currentThread->getName());
         exitProcess();
         break;
       }

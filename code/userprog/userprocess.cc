@@ -4,7 +4,7 @@
 #include "userprocess.h"
 
 Semaphore * mutex_process = new Semaphore("mutex_process",1);
-int pid = 1;
+// int pid = 1; //Censé être utilisé pour nommer les threads 
 
 using namespace std;
 
@@ -35,11 +35,15 @@ void StartForkExec(int arg) {
 void
 do_ForkExec (char * filename)
 {
-    mutex_process->P();
-    string threadname = "forkexec" + pid;
-    pid++;
-    mutex_process->V();
-    Thread * t = new Thread(threadname.c_str());
+    // mutex_process->P();
+    // pid++;
+    // mutex_process->V();
+    char*name=new char[3];
+    name[0]='p';
+    static int id;
+    name[1]='0'+(id++);
+    name[2]=0;
+    Thread * t = new Thread(name);//"forkexec");
     void (*f)(int) = StartForkExec;
     t->Fork(f, (int) filename);
 }
@@ -52,6 +56,7 @@ void exitProcess() {
     if(CurrentProcessNumber == 0) {
         interrupt->Halt ();
     }
+    currentThread->Finish();
 }
 
 

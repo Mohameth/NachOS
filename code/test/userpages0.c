@@ -29,7 +29,7 @@ int main()
 {
     UserThreadCreate(f1,0);
     UserThreadCreate(f2,0);
-    PutChar('L');
+    PutString("MLM");
     PutChar('\n');
     Exit(0);
 }

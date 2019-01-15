@@ -10,11 +10,7 @@ typedef struct {
     int arg;
 } args;
 
-//contient les informations pour un thread: stack pointeur et semaphore assurant la synchronisation (thread join)
-typedef struct {
-    int sp;
-    Semaphore * s;
-} ThreadInfo; 
+
 
 extern int do_UserThreadCreate(int f, int arg);
 

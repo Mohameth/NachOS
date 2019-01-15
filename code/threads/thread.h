@@ -137,8 +137,8 @@ class Thread
   public:
     void SaveUserState ();	// save user-level register state
     void RestoreUserState ();	// restore user-level register state
-    void setTid(int tid);
-    int getTid();
+    void setTID(int tid);
+    int getTID();
 
     AddrSpace *space;		// User code this thread is running.
 #endif

@@ -1,14 +1,9 @@
 #include "thread.h"
 #include "system.h"
 #include "userthread.h"
-#include <map>
 
 using namespace std;
 
-//Hashmap reliant le tid du thread a la structure contenant les informations du thread
-map<int,ThreadInfo> infos;
-
-int compteurTID =0;
 
 Semaphore * mutex_thread = new Semaphore("mutex_thread",1);
 
@@ -22,7 +17,7 @@ static void StartUserThread(int f) {
     currentThread->space->RestoreState();
     machine->WriteRegister(PCReg,a->fonction);
     machine->WriteRegister(NextPCReg,a->fonction+4);
-    machine->WriteRegister(StackReg,infos.at(currentThread->getTid()).sp );
+    machine->WriteRegister(StackReg,currentThread->space->infos->at(currentThread->getTID()).sp );
 
     machine->WriteRegister(4,a->arg);
     mutex_thread->V();
@@ -48,37 +43,38 @@ int do_UserThreadCreate(int f, int arg) {
         mutex_thread->V();
         return -1;
     }
-    newThread->setTid(compteurTID++); //id du thread crée
+    newThread->setTID(currentThread->space->getCompteurTID()); //id du thread crée
+    currentThread->space->setCompteurTID(currentThread->space->getCompteurTID()+1);
     ThreadInfo t;
     t.sp = newSP;
     t.s = new Semaphore("sem Thread",0);
-    infos.insert(pair<int,ThreadInfo>(newThread->getTid(),t)); //ajout dans la hashmap les données
+    currentThread->space->infos->insert(pair<int,ThreadInfo>(newThread->getTID(),t)); //ajout dans la hashmap les données
    
     mutex_thread->V();
 
     newThread->Fork(StartUserThread,(int) a);  //execute StartUserThread
-    return newThread->getTid();
+    return newThread->getTID();
 }
 
 void do_UserThreadExit() {
-    currentThread->space->ClearSPThread(infos.at(currentThread->getTid()).sp);
+    currentThread->space->ClearSPThread(currentThread->space->infos->at(currentThread->getTID()).sp);
 
-    infos.at(currentThread->getTid()).s->V();
+    currentThread->space->infos->at(currentThread->getTID()).s->V();
     currentThread->Finish();
 }
 
 void do_UserThreadJoin(int tid) {
     //gestion du cas ou on réalise un join sur un tid non valide ou d'un deuxième appel de threadjoin.
-    if (infos.find(tid) == infos.end()) //si les données du thread n'exite plus dans la hashmap, ne rien faire
+    if (currentThread->space->infos->find(tid) == currentThread->space->infos->end()) //si les données du thread n'exite plus dans la hashmap, ne rien faire
         return;
-    infos.at(tid).s->P(); //l'aquisition du sémaphore indique que le thread est terminé
-    infos.erase(tid); //supprime du hashmap les infos du thread (libèration de la mémoire)
+    currentThread->space->infos->at(tid).s->P(); //l'aquisition du sémaphore indique que le thread est terminé
+    currentThread->space->infos->erase(tid); //supprime du hashmap les infos du thread (libèration de la mémoire)
 
 }
 
 void attendreThread(){
     mutex_thread->P();
-    int compteur=compteurTID;
+    int compteur=currentThread->space->getCompteurTID();
     mutex_thread->V();
     for(int i=0;i<compteur;i++){
         do_UserThreadJoin(i);

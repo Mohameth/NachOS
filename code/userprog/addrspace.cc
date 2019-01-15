@@ -153,6 +153,9 @@ AddrSpace::AddrSpace (OpenFile * executable)
     this->stackBitMap = new BitMap(divRoundUp(UserStackSize,PageSize*3));
     this->stackBitMap->Mark(0); // 3 pages for the main thread; already use.
 
+
+    this->compteurTID = 0;
+    this->infos = new map<int,ThreadInfo>();
 }
 
 //----------------------------------------------------------------------
@@ -167,6 +170,7 @@ AddrSpace::~AddrSpace ()
   // delete pageTable;
   delete [] pageTable;
   // End of modification
+  delete infos;
 }
 
 //----------------------------------------------------------------------
@@ -246,3 +250,19 @@ void AddrSpace::ClearSPThread(int SP) {
     int numPageSP = (( (SPMain - SP) /3)/PageSize); //retrouve le numéro du groupe de 3 pages, a partir du stack pointeur associé au thread
     stackBitMap->Clear(numPageSP);
 }
+
+// map<int,ThreadInfo> *
+// AddrSpace::getInfos() {
+//     return this->infos;
+// }
+
+int
+AddrSpace::getCompteurTID() {
+    return this->compteurTID;
+}
+
+void
+AddrSpace::setCompteurTID(int newTID) {
+    this->compteurTID = newTID;
+}
+

@@ -273,6 +273,31 @@ PrintRepository:
 	j	$31
 	.end PrintRepository
 
+	.globl Serveur
+	.ent	Serveur
+Serveur:
+	addiu $2,$0,SC_Serveur
+	syscall
+	j	$31
+	.end Serveur
+
+	.globl ClientGet
+	.ent	ClientGet
+ClientGet:
+	addiu $2,$0,SC_ClientGet
+	syscall
+	j	$31
+	.end ClientGet
+
+	.globl ClientPut
+	.ent	ClientPut
+ClientPut:
+	addiu $2,$0,SC_ClientPut
+	syscall
+	j	$31
+	.end ClientPut
+
+
 
 /* dummy function to keep gcc happy */
         .globl  __main

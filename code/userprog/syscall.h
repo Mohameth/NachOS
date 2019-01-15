@@ -47,6 +47,9 @@
 #define SC_Send 26
 #define SC_ReceiveInt 27
 #define SC_SendInt 28
+#define SC_Serveur 29
+#define SC_ClientGet 30
+#define SC_ClientPut 31
 
 #ifdef IN_USER_MODE
 
@@ -197,6 +200,10 @@ void Send(int to, const char *data);
 void Receive(char *data);
 void SendInt(int to, const int data);
 int ReceiveInt();
+
+void Serveur();
+int ClientGet(int faradr, const char * filename);
+int ClientPut(int faradrn, const char * filename);
 
 #endif // IN_USER_MODE
 

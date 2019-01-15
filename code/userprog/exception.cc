@@ -214,6 +214,36 @@ ExceptionHandler (ExceptionType which) {
         break;
       }
 
+      case SC_Serveur:
+      {
+        fileTransfert->Serveur();
+        break;
+      }
+
+      case SC_ClientGet:
+      {
+        int faradr = machine->ReadRegister(4);
+        int saddr = machine->ReadRegister(5);
+        char filename[11];
+        synchconsole->copyStringFromMachine(saddr, filename, 10);
+
+        int res = fileTransfert->ClientGet(faradr, filename);
+        machine->WriteRegister(2, res);
+        break;
+      }
+
+      case SC_ClientPut:
+      {
+        int faradr = machine->ReadRegister(4);
+        int saddr = machine->ReadRegister(5);
+        char filename[11];
+        synchconsole->copyStringFromMachine(saddr, filename, 10);
+
+        int res = fileTransfert->ClientPut(faradr, filename);
+        machine->WriteRegister(2, res);
+        break;
+      }
+
       case SC_GetChar: {
         char c = synchconsole->SynchGetChar();
         machine->WriteRegister(2,(int) c);

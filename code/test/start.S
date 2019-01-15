@@ -233,6 +233,22 @@ ChangeRepository:
 	j	$31
 	.end ChangeRepository
 
+	.globl Receive
+	.ent	Receive
+Receive:
+	addiu $2,$0,SC_Receive
+	syscall
+	j	$31
+	.end Receive
+
+	.globl Send
+	.ent	Send
+Send:
+	addiu $2,$0,SC_Send
+	syscall
+	j	$31
+	.end Send
+
 	.globl PrintRepository
 	.ent	PrintRepository
 PrintRepository:

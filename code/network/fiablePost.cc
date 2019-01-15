@@ -92,13 +92,8 @@ FiablePostOffice::Send(PacketHeader pktHdr, MailHeader mailHdr, const char* data
     
         //post->Send(outPktHdr,outMailHdr,ackmess);
     }
-<<<<<<< HEAD
     else
         if (DebugIsEnabled('n')) printf("message non reçu : %s reçu\n",buffer);
-=======
-    //else
-      //  printf("message non reçu : %s reçu\n",buffer);
->>>>>>> 1b51a89e9e9313d6fefa797fd3c1a3e3584da0f2
 }
 
 //----------------------------------------------------------------------

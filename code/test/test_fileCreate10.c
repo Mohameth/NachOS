@@ -19,4 +19,5 @@ int main()
     ASSERT_TEST(res5 == 1); 
     ASSERT_TEST(res6 == 1); 
     ASSERT_TEST(res7 == 1); 
+    Exit(0);
 }

@@ -10,4 +10,5 @@ int main()
     ASSERT_TEST(s[1]=='\n');
     ASSERT_TEST(s[2]=='\0');
     ASSERT_TEST(s[3]=='\0');
+    Exit(0);
 }

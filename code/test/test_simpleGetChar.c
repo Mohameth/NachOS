@@ -6,4 +6,5 @@ int main()
 {
     char c = GetChar();
     ASSERT_TEST(c==val);
+    Exit(0);
 }

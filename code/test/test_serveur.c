@@ -15,4 +15,5 @@ int main()
     ASSERT_TEST(n == 5);
     
     Serveur();
+    Exit(0);
 }

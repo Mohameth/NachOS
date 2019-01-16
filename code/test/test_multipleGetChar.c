@@ -15,4 +15,5 @@ int main()
     ASSERT_TEST(b == val2);
     ASSERT_TEST(c==val3);
     ASSERT_TEST(d==val4);
+    Exit(0);
 }

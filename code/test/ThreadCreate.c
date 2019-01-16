@@ -14,8 +14,8 @@ int main()
     int tid = UserThreadCreate(f,&arg);
     tid = UserThreadCreate(f,&arg2);
     PutChar('\n');
-
-    for(int i=0;i<=tid;i++){
+    int i;
+    for(i = 0;i<=tid;i++){
         UserThreadJoin(i);
     }
     

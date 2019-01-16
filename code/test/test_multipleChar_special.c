@@ -7,5 +7,5 @@ int main()
     PutChar('\n');
     PutChar('$');
     PutChar('B');
-
+    Exit(0);
 }

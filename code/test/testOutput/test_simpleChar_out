@@ -1,10 +1,2 @@
 Aexit with status 0
 Machine halting!
-
-Ticks: total 448, idle 100, system 320, user 28
-Disk I/O: reads 0, writes 0
-Console I/O: reads 0, writes 1
-Paging: faults 0
-Network I/O: packets received 0, sent 0
-
-Cleaning up...

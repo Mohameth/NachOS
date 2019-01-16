@@ -4,7 +4,7 @@ int
 main ()
 {
     //PutString("Test d'ouverture\n");
-    Create("f1.txt");
+    Create("f1.txt",15);
     int success = CreateRepository("rep1");
     if (!success) PutString("ERREUR");
     success = ChangeRepository("rep1");

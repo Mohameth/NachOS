@@ -233,6 +233,38 @@ ChangeRepository:
 	j	$31
 	.end ChangeRepository
 
+	.globl Receive
+	.ent	Receive
+Receive:
+	addiu $2,$0,SC_Receive
+	syscall
+	j	$31
+	.end Receive
+
+	.globl Send
+	.ent	Send
+Send:
+	addiu $2,$0,SC_Send
+	syscall
+	j	$31
+	.end Send
+
+	.globl ReceiveInt
+	.ent	ReceiveInt
+ReceiveInt:
+	addiu $2,$0,SC_ReceiveInt
+	syscall
+	j	$31
+	.end ReceiveInt
+
+	.globl SendInt
+	.ent	SendInt
+SendInt:
+	addiu $2,$0,SC_SendInt
+	syscall
+	j	$31
+	.end SendInt
+
 	.globl PrintRepository
 	.ent	PrintRepository
 PrintRepository:
@@ -240,6 +272,31 @@ PrintRepository:
 	syscall
 	j	$31
 	.end PrintRepository
+
+	.globl Serveur
+	.ent	Serveur
+Serveur:
+	addiu $2,$0,SC_Serveur
+	syscall
+	j	$31
+	.end Serveur
+
+	.globl ClientGet
+	.ent	ClientGet
+ClientGet:
+	addiu $2,$0,SC_ClientGet
+	syscall
+	j	$31
+	.end ClientGet
+
+	.globl ClientPut
+	.ent	ClientPut
+ClientPut:
+	addiu $2,$0,SC_ClientPut
+	syscall
+	j	$31
+	.end ClientPut
+
 
 
 /* dummy function to keep gcc happy */

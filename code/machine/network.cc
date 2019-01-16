@@ -17,7 +17,8 @@
 static void NetworkReadPoll(int arg)
 { Network *net = (Network *)arg; net->CheckPktAvail(); }
 static void NetworkSendDone(int arg)
-{ Network *net = (Network *)arg; net->SendDone(); }
+{ Network *net = (Network *)arg; net->SendDone();
+}
 
 // Initialize the network emulation
 //   addr is used to generate the socket name

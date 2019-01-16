@@ -190,7 +190,6 @@ FileSystem::Create(const char *name, int initialSize)
     FileHeader *hdr;
     int sector;
     bool success;
-
     DEBUG('f', "Creating file %s, size %d\n", name, initialSize);
 
     directory = new Directory(NumDirEntries);

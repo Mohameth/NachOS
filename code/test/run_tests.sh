@@ -49,6 +49,7 @@ runTest () {
    else
       $($BUILDFolder/$nachosCmd $BUILDFolder/$f > $outFileTmp)
    fi
+      $(head -n -8 $outFileTmp > temp.txt ; mv temp.txt $outFileTmp)  #supprime les dernières lignes des résultats (ticks, disk)
 
    var=$(diff $outFileTmp $ExpectedoutFile)
    if [ -z "$var" ]; then

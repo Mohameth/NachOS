@@ -43,7 +43,13 @@
 #define SC_CreateRepository 22
 #define SC_ChangeRepository 23
 #define SC_PrintRepository  24
-
+#define SC_Receive 25
+#define SC_Send 26
+#define SC_ReceiveInt 27
+#define SC_SendInt 28
+#define SC_Serveur 29
+#define SC_ClientGet 30
+#define SC_ClientPut 31
 
 #ifdef IN_USER_MODE
 
@@ -106,7 +112,7 @@ typedef int OpenFileId;
 #define ConsoleOutput	1
 
 /* Create a Nachos file, with "name" */
-void Create (char *name);
+int Create (char *name, int size);
 
 /* Open the Nachos file "name", and return an "OpenFileId" that can 
  * be used to read and write to the file.
@@ -114,7 +120,7 @@ void Create (char *name);
 OpenFileId Open (char *name);
 
 /* Write "size" bytes from "buffer" to the open file. */
-void Write (char *buffer, int size, OpenFileId id);
+int Write (char *buffer, int size, OpenFileId id);
 
 /* Read "size" bytes from the open file into "buffer".  
  * Return the number of bytes actually read -- if the open file isn't
@@ -189,6 +195,15 @@ void ForkExec(char * exec);
 /* wait the thread with the tid tid to finish
 */
 void UserThreadJoin(int tid);
+
+void Send(int to, const char *data);
+void Receive(char *data);
+void SendInt(int to, const int data);
+int ReceiveInt();
+
+void Serveur();
+int ClientGet(int faradr, const char * filename);
+int ClientPut(int faradrn, const char * filename);
 
 #endif // IN_USER_MODE
 

@@ -294,7 +294,7 @@ ExceptionHandler (ExceptionType which) {
         int id = fileSystem->getId(file);
 
         machine->WriteRegister(2, id);
-        printf("fichier %s ouvert (id=%d)\n",name, id);
+        //printf("fichier %s ouvert (id=%d)\n",name, id);
         break;
       }
 

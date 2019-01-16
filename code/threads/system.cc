@@ -177,6 +177,9 @@ Initialize (int argc, char **argv)
 
 #ifdef FILESYS_NEEDED
     fileSystem = new FileSystem (format);
+	if (format){
+		interrupt->Halt();
+	}
 #endif
 
 #ifdef NETWORK

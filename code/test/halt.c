@@ -12,10 +12,12 @@
 
 #include "syscall.h"
 
-int
-main ()
+int main ()
 {
+    
     Halt ();
+    int i = 0;
+    i = i + 8;
 
     /* not reached */
     return 0;

@@ -6,4 +6,5 @@ int main()
     char s[1];
     GetString(s,1);
     ASSERT_TEST(s[0]=='\0');
+    Exit(0);
 }

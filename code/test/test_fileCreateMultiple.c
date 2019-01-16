@@ -8,6 +8,6 @@ int main()
     ASSERT_TEST(f1==0);
     int res = Create(filename,10);
     ASSERT_TEST(res == 0); //imossible de créer deux fichiers avec le même nom
-    
+    Exit(0);
 
 }

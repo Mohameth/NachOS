@@ -22,4 +22,5 @@ int main()
     ASSERT_TEST(bufReadF1[0]=='a');
     ASSERT_TEST(bufReadF1[1]=='b');
     ASSERT_TEST(bufReadF1[2]=='c');
+    Exit(0);
 }

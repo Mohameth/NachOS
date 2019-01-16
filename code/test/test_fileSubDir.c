@@ -33,4 +33,5 @@ int main()
 
     PrintRepository();
     ASSERT_TEST(d7 == 1);
+    Exit(0);
 }

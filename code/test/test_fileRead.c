@@ -29,4 +29,5 @@ int main()
     ASSERT_TEST(bufReadF1[5] != 'f');
     ASSERT_TEST(bufReadF1[6] != 'g');
     Close(f1);
+    Exit(0);
 }

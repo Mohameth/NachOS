@@ -10,4 +10,5 @@ int main()
     char a = 'T';
     PutChar(a);
     PutChar(a+1);
+    Exit(0);
 }

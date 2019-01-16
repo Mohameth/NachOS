@@ -6,4 +6,5 @@ int main()
     char *s = "house";
     PutString(s);
     PutString(s + 3);
+    Exit(0);
 }

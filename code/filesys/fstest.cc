@@ -200,15 +200,15 @@ void testCD() {
 
     if (!fileSystem->Create("file", 5)) printf("ERREUR FILE CREATION \n");
     if (!fileSystem->Remove("file")) printf("ERREUR FILE REMOVE \n");
-    fileSystem->printRepository();
+    //fileSystem->printRepository();
     if (!fileSystem->Remove("test3")) printf("ERREUR FOLDER REMOVE \n");
-    fileSystem->printRepository();
+    //fileSystem->printRepository();
 
     if (!fileSystem->changeRepository("..")) printf("ERREUR M \n");
     if (!fileSystem->changeRepository("..")) printf("ERREUR N \n");
 
     if (!fileSystem->Remove("test12")) printf("C'est Normal FOLDER REMOVE \n");
-    fileSystem->printRepository();
+    //fileSystem->printRepository();
 
     //fileSystem->printRepository();
 }

@@ -6,4 +6,5 @@ int main()
     int to = 1;
     int data = 64;
     Send(to,(char *)&data);
+    Exit(0);
 }

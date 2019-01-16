@@ -6,4 +6,5 @@ int main()
 {
     char a = GetChar();
     ASSERT_TEST(a==MYEOF);  //EOF
+    Exit(0);
 }

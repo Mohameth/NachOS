@@ -6,4 +6,5 @@ int main()
     Create(filename,10);
     OpenFileId f1 = Open(filename);
     ASSERT_TEST(f1==0);
+    Exit(0);
 }

@@ -2,4 +2,5 @@
 int main()
 {
     PutChar('A');
+    Exit(0);
 }

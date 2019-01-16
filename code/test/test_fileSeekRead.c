@@ -33,4 +33,5 @@ int main()
 
     bufRead = readPos(2,f1);
     ASSERT_TEST(bufRead == 'c');
+    Exit(0);
 }

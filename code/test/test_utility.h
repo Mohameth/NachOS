@@ -14,7 +14,8 @@
 
 #define SLEEP_TEST(amount)             \
     PutString("\nSTART sleep\n");        \
-    for (int i = 0; i < (amount); i++) \
+    int i; 				\
+    for (i = 0; i < (amount); i++) \
     {                                  \
     }                                  \
     PutString("END sleep\n");           \

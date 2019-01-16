@@ -14,12 +14,14 @@ void function(void *arg)
 int main(){
     int arg = 42;
     int tid = 0;
-    for (int i = 0; i < NB_THREAD_MAX + 1 ; i++){ //noter le NB_THREAD_MAX+1 dans la condtions
+    int i;
+    for (i = 0; i < NB_THREAD_MAX + 1 ; i++){ //noter le NB_THREAD_MAX+1 dans la condtions
         tid = UserThreadCreate(function, &arg);
     }
     ASSERT_TEST(tid == -1); //actuellement le nombre de thread limite dans notre nachos est a NB_THREAD_MAX (2) donc après le for on doit avoir -1
 
-    for (int j = 0; j < NB_THREAD_MAX + 1; j++){
+    int j;
+    for (j = 0; j < NB_THREAD_MAX + 1; j++){
         UserThreadJoin(j);
     }
 

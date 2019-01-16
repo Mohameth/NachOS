@@ -24,5 +24,5 @@ int main()
     
     PrintRepository();
 
-    
+    Exit(0);
 }

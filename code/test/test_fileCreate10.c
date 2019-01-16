@@ -21,4 +21,5 @@ int main()
     ASSERT_TEST(res6 == 1); 
     ASSERT_TEST(res7 == 1); 
     ASSERT_TEST(res8 == 0);  //echec de création, comportement normal (max 10 fichier) (présence du "." dossier courant)
+    Exit(0);
 }

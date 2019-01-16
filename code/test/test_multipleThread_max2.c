@@ -13,11 +13,13 @@ void function(void *arg)
 //Ce test n'est valable uniquement pour la création de deux thread a maximum
 int main(){
     int arg = 42;
-    for (int i = 0; i < NB_THREAD_MAX; i++){ //noter le NB_THREAD_MAX+1 dans la condtions
+    int i;
+    for (i = 0; i < NB_THREAD_MAX; i++){ //noter le NB_THREAD_MAX+1 dans la condtions
         UserThreadCreate(function, &arg);
     }
 
-    for (int j = 0; j < NB_THREAD_MAX; j++){
+    int j;
+    for (j = 0; j < NB_THREAD_MAX; j++){
         UserThreadJoin(j);
     }
 

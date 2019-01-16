@@ -5,4 +5,5 @@ int main()
 {
     int val = GetInt();
     ASSERT_TEST(val == 42);
+    Exit(0);
 }

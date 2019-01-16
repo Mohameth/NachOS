@@ -14,4 +14,5 @@ int main()
     int v = 77;
     PutInt(v);
     PutInt(v + 11);
+    Exit(0);
 }

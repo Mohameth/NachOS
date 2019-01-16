@@ -19,8 +19,6 @@ class FiablePostOffice {
     				// Send a message to a mailbox on a remote 
 				// machine.  The fromBox in the MailHeader is 
 				// the return box for ack's.
-    
-    void SendAck(PacketHeader pktHdr, MailHeader mailHdr, const char *data);
 
     void Receive(int box, PacketHeader *pktHdr, 
 		MailHeader *mailHdr, char *data);
@@ -33,6 +31,7 @@ class FiablePostOffice {
 
     void ReSend();
 
+    int GetAddr();
   private:
     PostOffice * post;
     PacketHeader lpktHdr;

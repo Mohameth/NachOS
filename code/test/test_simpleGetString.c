@@ -8,4 +8,5 @@ int main()
     ASSERT_TEST(s[0]=='a');
     ASSERT_TEST(s[1]=='b');
     ASSERT_TEST(s[2]=='\0'); //d'après la documentation le dernier caractère est remplacé par \0
+    Exit(0);
 }

@@ -11,7 +11,8 @@ void f(void * arg) {
 int main()
 {
     int arg = 0;
-    for (int i = 1; i<1000;i++) {
+    int i;
+    for (i = 1; i<1000;i++) {
         UserThreadCreate(f,&arg);
     }
     while(1);

@@ -35,6 +35,7 @@ Machine *machine;		// user program memory and registers
 PostOffice *postOffice;
 FiablePostOffice *fiablePostOffice;
 UnlimitedPostOffice *unlimitedPostOffice;
+FileTransfert *fileTransfert;
 #endif
 
 #ifdef CHANGED
@@ -127,7 +128,7 @@ Initialize (int argc, char **argv)
 	      debugUserProg = TRUE;
 #endif
 #ifdef FILESYS_NEEDED
-	  if (!strcmp (*argv, "-f"))
+	  if (!strcmp (*argv, "-fd"))
 	      format = TRUE;
 #endif
 #ifdef NETWORK
@@ -182,6 +183,7 @@ Initialize (int argc, char **argv)
     postOffice = new PostOffice (netname, rely, 10);
 	fiablePostOffice = new FiablePostOffice(postOffice);
 	unlimitedPostOffice = new UnlimitedPostOffice(fiablePostOffice);
+	fileTransfert = new FileTransfert(unlimitedPostOffice);
 #endif
 
 #ifdef CHANGED

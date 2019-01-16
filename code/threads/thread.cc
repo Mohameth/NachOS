@@ -45,6 +45,10 @@ Thread::Thread (const char *threadName)
     for (int r=NumGPRegs; r<NumTotalRegs; r++)
       userRegisters[r] = 0;
 #endif
+
+    #ifdef FILESYS
+    nbFichierOuverts=0;
+    #endif
 }
 
 //----------------------------------------------------------------------
@@ -417,5 +421,49 @@ int Thread::getTID() {
 }
 
 #endif
+
+#ifdef FILESYS	
+
+void Thread::addEntry(int entry,int secteur){
+    int i;
+    for(i=entry;i<nbFichierOuverts-1;i++){
+        if(fileSystem->existRepository(table[i].secteur)){
+            table[i].id=entry;
+            table[i].secteur=secteur;
+            break;
+        }        
+    }
+    if(i==nbFichierOuverts && i<10){
+        table[nbFichierOuverts].id=entry;
+        table[nbFichierOuverts].secteur=secteur;
+        nbFichierOuverts++;
+    }
+}
+
+void Thread::removeEntry(int id){
+    int entry=getEntry(id);
+    for(int i=entry;i<nbFichierOuverts-1;i++){
+        table[i]=table[i+1];
+    }
+    nbFichierOuverts--;
+}
+
+bool Thread::existId(int id){
+    for(int i=0;i<nbFichierOuverts;i++){
+        if(table[i].id==id)
+            return true;
+    }
+    return false;
+}
+
+int Thread::getEntry(int id){
+    for(int i=0;i<nbFichierOuverts;i++){
+        if(table[i].id==id)
+        return i;
+    }
+    return -1;
+}
+   
+#endif 
 
 

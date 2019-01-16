@@ -48,9 +48,11 @@ extern SynchDisk *synchDisk;
 #include "post.h"
 #include "fiablePost.h"
 #include "unlimitedPost.h"
+#include "fileTransfert.h"
 extern PostOffice *postOffice;
 extern FiablePostOffice * fiablePostOffice;
 extern UnlimitedPostOffice * unlimitedPostOffice;
+extern FileTransfert * fileTransfert;
 #endif
 
 #ifdef CHANGED

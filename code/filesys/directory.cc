@@ -41,7 +41,6 @@ Directory::Directory(int size)
     tableSize = size;
     for (int i = 0; i < tableSize; i++){
         table[i].inUse = FALSE;
-        table[i].isFile=TRUE;
     }
 }
 
@@ -139,6 +138,7 @@ Directory::Add(const char *name, int newSector)
             table[i].inUse = TRUE;
             strncpy(table[i].name, name, FileNameMaxLen); 
             table[i].sector = newSector;
+            table[i].isFile=TRUE;
         return TRUE;
 	}
     return FALSE;	// no space.  Fix when we have extensible files.

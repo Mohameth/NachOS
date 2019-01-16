@@ -7,4 +7,5 @@ int main()
     PutString("ABC\nDEF");
     PutString("ÿ");
     PutString("1");
+    Exit(0);
 }

@@ -125,6 +125,7 @@ FileSystem::FileSystem(bool format)
 
         DEBUG('f', "Writing bitmap and directory back to disk.\n");
     directory->Add(".",DirectorySector);
+    directory->setToRepository(".");
 
 	freeMap->WriteBack(freeMapFile);	 // flush changes to disk
 	directory->WriteBack(directoryFile);
@@ -146,6 +147,7 @@ FileSystem::FileSystem(bool format)
         //OpenFile *directoryFile = new OpenFile(DirectorySector);
         if (openFile.find(DirectorySector) != openFile.end())
         return;
+        
         OpenFile *directoryFile=new OpenFile(DirectorySector);
         openFile.insert(pair<int,OpenFile*>(DirectorySector,directoryFile));
     }
@@ -188,7 +190,6 @@ FileSystem::Create(const char *name, int initialSize)
     FileHeader *hdr;
     int sector;
     bool success;
-
     DEBUG('f', "Creating file %s, size %d\n", name, initialSize);
 
     directory = new Directory(NumDirEntries);
@@ -245,9 +246,10 @@ FileSystem::Open(const char *name)
     sector = directory->Find(name); 
 
     if (sector >= 0){
-        if(!directory->isRepository(name)){
+        if(!existFichier(name) && !directory->isRepository(name)){
             openFile2 = new OpenFile(sector);	// name was found in directory
-            addOpenFile(openFile2);
+            if(!addOpenFile(openFile2,name,sector))
+            return NULL;
         }
     } 		
 	 
@@ -271,12 +273,17 @@ FileSystem::Open(const char *name)
 
 bool
 FileSystem::Remove(const char *name)
-{ 
+{
+    if(existFichier(name)){
+        return FALSE;
+    } 
+
     Directory *directory;
     Directory *directory2;
     BitMap *freeMap;
     FileHeader *fileHdr;
     int sector;
+    OpenFile *file=NULL;
     
     directory = new Directory(NumDirEntries);
     directory->FetchFrom(openFile.at(sectorCurrentRepository));
@@ -287,13 +294,13 @@ FileSystem::Remove(const char *name)
     }
 
     if(directory->isRepository(name)){
-        OpenFile *file=new OpenFile(sector);
+        file=openFile.at(sector);
         directory2= new Directory(NumDirEntries);
         directory2->FetchFrom(file);
 
-        if(!directory2->isEmpty() || !strncmp(".", name, FileNameMaxLen)){
+        if(!directory2->isEmpty() || !strncmp("..", name, FileNameMaxLen) || !strncmp(".", name, FileNameMaxLen)){
             delete directory;
-            delete directory2;
+            delete directory2;            
             delete file;
             return FALSE;
         }
@@ -313,7 +320,9 @@ FileSystem::Remove(const char *name)
     directory->WriteBack(openFile.at(sectorCurrentRepository));      // flush to disk
     
     if(directory->isRepository(name)){
-        delete directory2;
+        openFile.erase(sector);
+        delete directory2;            
+        delete file;
     }   
     delete fileHdr;
     delete directory;
@@ -431,29 +440,23 @@ bool FileSystem::changeRepository(const char *name){
     return TRUE;
 }
 
-void FileSystem::addOpenFile(OpenFile* f) {
-    if(nbFicherOuvert!=10){
-        table[nbFicherOuvert].file=f;
-        table[nbFicherOuvert].duree=0;
-        nbFicherOuvert++;
+bool FileSystem::existRepository(int secteur){
+    return openFile.find(sectorCurrentRepository)!=openFile.end();
+}
+
+bool FileSystem::addOpenFile(OpenFile* f,const char *name,int secteur) {
+    if(nbFicherOuvert==10){
+        return FALSE;
     }
-    else{
-        int index=0,max=++table[0].duree;
-        for(int i=1;i<nbFicherOuvert;i++){
-            if(max<=++table[i].duree){
-                max=table[i].duree;
-                index=i;
-            }
-        }
-        delete table[index].file;
-        table[index].file=f;
-        table[index].duree=0;
-    }
+    table[nbFicherOuvert].file=f;
+    table[nbFicherOuvert].name=name;
+    nbFicherOuvert++;
+    return TRUE;
 }
 
 void FileSystem::removeOpenFile(int id) {
     for(int i=id;i<nbFicherOuvert-1;i++){
-        table[i].file=table[i+1].file;
+        table[i]=table[i+1];
     }
     nbFicherOuvert--;
 }
@@ -468,4 +471,19 @@ int FileSystem::getId(OpenFile *f) {
             return i;
     }
     return -1;
+}
+
+bool FileSystem::existFichier(const char* name){
+    for(int i=0;i<nbFicherOuvert;i++){
+        if(!strncmp(table[i].name, name, FileNameMaxLen)){
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+int FileSystem::getIdLibre(){
+    if(nbFicherOuvert==10)
+        return -1;
+    return nbFicherOuvert;
 }

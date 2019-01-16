@@ -49,6 +49,7 @@ OpenFile::OpenFile(int sector)
 OpenFile::~OpenFile()
 {  
     int id=fileSystem->getId(this);
+    
     if(id>=0){
         fileSystem->removeOpenFile(id);
         currentThread->removeEntry(id);

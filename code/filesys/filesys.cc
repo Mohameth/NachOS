@@ -125,6 +125,7 @@ FileSystem::FileSystem(bool format)
 
         DEBUG('f', "Writing bitmap and directory back to disk.\n");
     directory->Add(".",DirectorySector);
+    directory->setToRepository(".");
 
 	freeMap->WriteBack(freeMapFile);	 // flush changes to disk
 	directory->WriteBack(directoryFile);
@@ -146,6 +147,7 @@ FileSystem::FileSystem(bool format)
         //OpenFile *directoryFile = new OpenFile(DirectorySector);
         if (openFile.find(DirectorySector) != openFile.end())
         return;
+        
         OpenFile *directoryFile=new OpenFile(DirectorySector);
         openFile.insert(pair<int,OpenFile*>(DirectorySector,directoryFile));
     }

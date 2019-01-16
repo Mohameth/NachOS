@@ -43,16 +43,12 @@ FrameProvider::ReleaseFrame(unsigned int physicalFrame) {
     mutex->V();
 }
 
-int
+unsigned int
 FrameProvider::NumAvailFrame() {
     mutex->P();
-    int numAvail = 0;
-    for (int i = 0; i < numPages; i++) {
-        if (!frameBitMap->Test(i))
-            numAvail++;
-    }
-    return numAvail;
+     unsigned int numAvail = (unsigned int) frameBitMap->NumClear();
     mutex->V();
+    return numAvail;
 }
 
 #endif // CHANGED

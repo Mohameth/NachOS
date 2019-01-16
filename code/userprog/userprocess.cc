@@ -10,6 +10,8 @@ using namespace std;
 
 void StartForkExec(int arg) {
 
+    IntStatus oldLevel = interrupt->SetLevel (IntOff);
+
     char * filename = (char *) arg;
     OpenFile *executable = fileSystem->Open (filename);
     AddrSpace *space;
@@ -30,6 +32,9 @@ void StartForkExec(int arg) {
     currentThread->space->InitRegisters();
     currentThread->space->RestoreState();
     machine->Run();
+
+    (void) interrupt->SetLevel (oldLevel);
+
 }
 
 void

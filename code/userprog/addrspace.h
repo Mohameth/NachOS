@@ -19,7 +19,8 @@
 #include <map>
 
 
-#define UserStackSize		1024	// increase this as necessary!
+#define UserStackSize		8192	// increase this as necessary!
+#define UserThreadStackSize 3
 
 class Semaphore;
 
@@ -50,8 +51,6 @@ class AddrSpace
 
     int GetSPnewThread(); // get the SP of a new user thread created. -1 if not possible
     void ClearSPThread(int SP); // clear (Mark as free) the 3 pages identify by the addr SP
-
-    // map<int,ThreadInfo> * getInfos();
 
     int getCompteurTID();
 

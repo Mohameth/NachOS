@@ -23,6 +23,7 @@ static void StartUserThread(int f) {
     mutex_thread->V();
 
     machine->Run(); //execute la fonction dans PCREG
+    ASSERT(false);
 }
 
 int do_UserThreadCreate(int f, int arg) {
@@ -43,6 +44,8 @@ int do_UserThreadCreate(int f, int arg) {
         mutex_thread->V();
         return -1;
     }
+    printf("Size : %d\n\n", currentThread->space->infos->size());
+    ASSERT(currentThread->space->infos->size() < (UserStackSize / SectorSize)/UserThreadStackSize );
     newThread->setTID(currentThread->space->getCompteurTID()); //id du thread crée
     currentThread->space->setCompteurTID(currentThread->space->getCompteurTID()+1);
     ThreadInfo t;

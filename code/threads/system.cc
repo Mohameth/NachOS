@@ -33,12 +33,15 @@ Machine *machine;		// user program memory and registers
 
 #ifdef NETWORK
 PostOffice *postOffice;
+FiablePostOffice *fiablePostOffice;
+UnlimitedPostOffice *unlimitedPostOffice;
 #endif
 
 #ifdef CHANGED
 #ifdef USER_PROGRAM
 SynchConsole * synchconsole;
 FrameProvider * frameProvider;
+int CurrentProcessNumber;
 #endif
 #endif
 
@@ -164,6 +167,7 @@ Initialize (int argc, char **argv)
 #ifdef USER_PROGRAM
     machine = new Machine (debugUserProg);	// this must come first
 	frameProvider = new FrameProvider(NumPhysPages);
+	CurrentProcessNumber = 0;
 #endif
 
 #ifdef FILESYS
@@ -176,6 +180,8 @@ Initialize (int argc, char **argv)
 
 #ifdef NETWORK
     postOffice = new PostOffice (netname, rely, 10);
+	fiablePostOffice = new FiablePostOffice(postOffice);
+	unlimitedPostOffice = new UnlimitedPostOffice(fiablePostOffice);
 #endif
 
 #ifdef CHANGED

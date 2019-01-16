@@ -34,6 +34,7 @@ StartProcess (char *filename)
       }
     space = new AddrSpace (executable);
     currentThread->space = space;
+    CurrentProcessNumber++;
 
     delete executable;		// close file
 

@@ -25,6 +25,7 @@
 #include "system.h"
 #include "syscall.h"
 #include "userthread.h"
+#include "userprocess.h"
 
 //----------------------------------------------------------------------
 // UpdatePC : Increments the Program Counter register in order to resume
@@ -41,30 +42,6 @@ UpdatePC ()
     machine->WriteRegister (NextPCReg, pc);
 }
 
-void
-do_ForkExec (char *filename)
-{
-    OpenFile *executable = fileSystem->Open (filename);
-    AddrSpace *space;
-
-    if (executable == NULL)
-      {
-	  printf ("Unable to open file %s\n", filename);
-	  return;
-      }
-    Thread * t = new Thread("forkexec");
-    space = new AddrSpace (executable);
-    t->space = space;
-
-    delete executable;		// close file
-
-    t->space->InitRegisters ();	// set the initial register values
-    // t->space->RestoreState ();	// load page table register
-    scheduler->ReadyToRun(t);
-    // the address space exits
-    // by doing the syscall "exit"
-    printf("Fork done !\n");
-}
 
 //----------------------------------------------------------------------
 // ExceptionHandler
@@ -110,15 +87,19 @@ ExceptionHandler (ExceptionType which) {
     switch(type) {
 
       case SC_Halt: {
+        //printf("HALT");
+        attendreThread(); // attente des threads en cour d'execution
         DEBUG('a', "Shutdown, initiated by user program.\n");
         interrupt->Halt ();
         break;
       }
 
       case SC_Exit: {
+        //printf("EXIT");
+        attendreThread(); // attente des threads en cour d'execution
         DEBUG('a', "User Program terminate\n");
-        printf("exit with status %d\n",machine->ReadRegister(3));
-        interrupt->Halt();
+        printf("exit with status %d, thread : %s\n",machine->ReadRegister(4), currentThread->getName());
+        exitProcess();
         break;
       }
 
@@ -170,7 +151,7 @@ ExceptionHandler (ExceptionType which) {
 
       case SC_ForkExec: {
         int saddr =  machine->ReadRegister (4);
-        char s[MAX_STRING_SIZE];
+        char * s = new char[MAX_STRING_SIZE];
         synchconsole->copyStringFromMachine(saddr,s,MAX_STRING_SIZE-1);
         do_ForkExec(s);
         break;
@@ -194,6 +175,69 @@ ExceptionHandler (ExceptionType which) {
         do_UserThreadJoin(tid);
         break;
       }
+
+      /*case SC_Open: {
+        char name[MAX_STRING_SIZE];
+        int addr = machine->ReadRegister(4);
+        synchconsole->copyStringFromMachine(addr, name, MAX_STRING_SIZE-1);
+
+        OpenFile* file = fileSystem->Open(name);
+        if (file == NULL) printf("Erreur \n"); //TODO: Sortir
+        int id = fileSystem->getUnusedId();
+
+        fileSystem->addOpenFile(id, file);
+
+        machine->WriteRegister(2, id);
+        printf("fichier %s ouvert : %d",name, id);
+        break;
+      }*/
+
+      case SC_Create: {
+        char name[MAX_STRING_SIZE];
+        int addr = machine->ReadRegister(4);
+        synchconsole->copyStringFromMachine(addr, name, MAX_STRING_SIZE-1);
+
+        bool res = fileSystem->Create(name, 0);//TODO: gerer initialSize
+        if (res)  printf("Creation de fichier vide reussi\n");
+        else      printf("ERREUR DE CREATION \n");
+        break;
+      }
+
+      /*case SC_Read: {
+        //int bufAddr = machine->ReadRegister(4);
+        int size    = machine->ReadRegister(5);
+        int fileId  = machine->ReadRegister(6);
+
+        char value[MAX_STRING_SIZE];
+        
+        printf("id = %d \n", fileId);
+
+        OpenFile* f = fileSystem->getOpenFile(fileId);
+        
+        f->Read(value, size);
+        //TODO: mettre dans le buffer pointé par bufAddre la valeur
+        //TODO: retourner nb octets lues
+        printf("Lecture de %d octets = %s, id = %d \n", size, value, fileId);
+
+        break;
+      }
+
+      case SC_Write: {
+        int valueAddr = machine->ReadRegister(4);
+        int size    = machine->ReadRegister(5);
+        int fileId  = machine->ReadRegister(6);
+
+        char value[MAX_STRING_SIZE];
+        synchconsole->copyStringFromMachine(valueAddr, value, MAX_STRING_SIZE-1);
+        printf("id = %d \n", fileId);
+
+        OpenFile* f = fileSystem->getOpenFile(fileId);
+        
+        f->Write(value, size);
+
+        printf("Ecriture de %d octets = %s, id = %d \n", size, value, fileId);
+        break;
+      }*/
 
       default: {
         printf ("Unexpected user mode exception %d %d\n", which, type);

@@ -46,7 +46,11 @@ extern SynchDisk *synchDisk;
 
 #ifdef NETWORK
 #include "post.h"
+#include "fiablePost.h"
+#include "unlimitedPost.h"
 extern PostOffice *postOffice;
+extern FiablePostOffice * fiablePostOffice;
+extern UnlimitedPostOffice * unlimitedPostOffice;
 #endif
 
 #ifdef CHANGED
@@ -54,7 +58,8 @@ extern PostOffice *postOffice;
 #include "synchconsole.h"
 #include "frameprovider.h"
 extern SynchConsole * synchconsole;
-extern FrameProvider *frameProvider; // main memory management 
+extern FrameProvider *frameProvider; // main memory management
+extern int CurrentProcessNumber;
 #define MAX_STRING_SIZE 50
 #endif
 #endif

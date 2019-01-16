@@ -20,7 +20,7 @@ class FrameProvider {
 
         void ReleaseFrame(unsigned int physicalFrame);
 
-        int NumAvailFrame();
+        unsigned int NumAvailFrame();
     private:
         Semaphore * mutex;
         BitMap * frameBitMap;

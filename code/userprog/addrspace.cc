@@ -43,10 +43,9 @@ ReadAtVirtual (OpenFile * executable, int virtualaddr, int numBytes, int positio
         currentByte++;
         vAddr++;
     }
-    if (backPageTable != NULL && backNumPages) {
-        machine->pageTable = backPageTable;
-        machine->pageTableSize = backNumPages;
-    }
+    machine->pageTable = backPageTable;
+    machine->pageTableSize = backNumPages;
+
 }
 
 //----------------------------------------------------------------------
@@ -104,7 +103,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
     numPages = divRoundUp (size, PageSize);
     size = numPages * PageSize;
 
-    ASSERT (numPages <= NumPhysPages);	// check we're not trying
+    ASSERT (numPages <= frameProvider->NumAvailFrame());	// check we're not trying
     // to run anything too big --
     // at least until we have
     // virtual memory
@@ -129,7 +128,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
     this->numPages = numPages;
 // zero out the entire address space, to zero the unitialized data segment 
 // and the stack segment
-    bzero (machine->mainMemory, size);
+    //bzero (machine->mainMemory, size); //Useless while we have working virtual memory
 
 // then, copy in the code and data segments into memory
     if (noffH.code.size > 0)
@@ -154,6 +153,9 @@ AddrSpace::AddrSpace (OpenFile * executable)
     this->stackBitMap = new BitMap(divRoundUp(UserStackSize,PageSize*3));
     this->stackBitMap->Mark(0); // 3 pages for the main thread; already use.
 
+
+    this->compteurTID = 0;
+    this->infos = new map<int,ThreadInfo>();
 }
 
 //----------------------------------------------------------------------
@@ -168,6 +170,7 @@ AddrSpace::~AddrSpace ()
   // delete pageTable;
   delete [] pageTable;
   // End of modification
+  delete infos;
 }
 
 //----------------------------------------------------------------------
@@ -210,7 +213,6 @@ AddrSpace::InitRegisters ()
 //
 //      For now, nothing!
 //----------------------------------------------------------------------
-
 void
 AddrSpace::SaveState ()
 {
@@ -237,7 +239,7 @@ int AddrSpace::GetSPnewThread() {
         return -1; //création impossible du thread
     else {
         int SPMain = numPages * PageSize - 16;  //stack pointeur du thread principal
-        int SP = SPMain - (3*numPageSP*PageSize); //stack pointeur du thread en cours de création
+        int SP = SPMain - (UserThreadStackSize*numPageSP*PageSize); //stack pointeur du thread en cours de création
         return SP;
     }
 }
@@ -245,6 +247,22 @@ int AddrSpace::GetSPnewThread() {
 
 void AddrSpace::ClearSPThread(int SP) {
     int SPMain = numPages * PageSize - 16;
-    int numPageSP = (( (SPMain - SP) /3)/PageSize); //retrouve le numéro du groupe de 3 pages, a partir du stack pointeur associé au thread
+    int numPageSP = (( (SPMain - SP) / UserThreadStackSize)/PageSize); //retrouve le numéro du groupe de 3 pages, a partir du stack pointeur associé au thread
     stackBitMap->Clear(numPageSP);
 }
+
+// map<int,ThreadInfo> *
+// AddrSpace::getInfos() {
+//     return this->infos;
+// }
+
+int
+AddrSpace::getCompteurTID() {
+    return this->compteurTID;
+}
+
+void
+AddrSpace::setCompteurTID(int newTID) {
+    this->compteurTID = newTID;
+}
+

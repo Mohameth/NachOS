@@ -17,7 +17,6 @@
 #include "copyright.h"
 #include "thread.h"
 #include "switch.h"
-#include "synch.h"
 #include "system.h"
 
 #define STACK_FENCEPOST 0xdeadbeef	// this is put at the top of the
@@ -406,14 +405,14 @@ void
 Thread::RestoreUserState ()
 {
     for (int i = 0; i < NumTotalRegs; i++)
-	machine->WriteRegister (i, userRegisters[i]);
+        machine->WriteRegister (i, userRegisters[i]);
 }
 
-void Thread::setTid(int tids) {
-    tid = tids;
+void Thread::setTID(int tids) {
+    this->tid = tids;
 }
 
-int Thread::getTid() {
+int Thread::getTID() {
     return tid;
 }
 

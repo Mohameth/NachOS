@@ -137,6 +137,7 @@ main (int argc, char **argv)
 		ASSERT (argc > 2);
 		Copy (*(argv + 1), *(argv + 2));
 		argCount = 3;
+		interrupt->Halt();
 	    }
 	  else if (!strcmp (*argv, "-p"))
 	    {			// print a Nachos file

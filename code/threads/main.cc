@@ -163,7 +163,7 @@ main (int argc, char **argv)
 		PerformanceTest ();
 	    }
 
-		interrupt->Halt ();
+		//interrupt->Halt ();
 #endif // FILESYS
 #ifdef NETWORK
 	  if (!strcmp (*argv, "-o"))

@@ -10,6 +10,7 @@ int main()
     int res5 = Create("file6",10);
     int res6 = Create("file7",10);
     int res7 = Create("file8",10);
+    int res8 = Create("file9",10);
 
     ASSERT_TEST(res0 == 1); //create success
     ASSERT_TEST(res1 == 1); 
@@ -19,4 +20,5 @@ int main()
     ASSERT_TEST(res5 == 1); 
     ASSERT_TEST(res6 == 1); 
     ASSERT_TEST(res7 == 1); 
+    ASSERT_TEST(res8 == 0);  //echec de création, comportement normal (max 10 fichier) (présence du "." dossier courant)
 }

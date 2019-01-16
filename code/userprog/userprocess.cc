@@ -43,12 +43,7 @@ do_ForkExec (char * filename)
     // mutex_process->P();
     // pid++;
     // mutex_process->V();
-    char*name=new char[3];
-    name[0]='p';
-    static int id;
-    name[1]='0'+(id++);
-    name[2]=0;
-    Thread * t = new Thread(name);//"forkexec");
+    Thread * t = new Thread("forkexec");
     void (*f)(int) = StartForkExec;
     t->Fork(f, (int) filename);
 }

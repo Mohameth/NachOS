@@ -127,7 +127,7 @@ Initialize (int argc, char **argv)
 	      debugUserProg = TRUE;
 #endif
 #ifdef FILESYS_NEEDED
-	  if (!strcmp (*argv, "-f"))
+	  if (!strcmp (*argv, "-fd"))
 	      format = TRUE;
 #endif
 #ifdef NETWORK

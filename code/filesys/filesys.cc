@@ -430,7 +430,7 @@ bool FileSystem::changeRepository(const char *name){
     }
     
     sectorCurrentRepository=directory->Find(name);
-    printf("SECTEUR -- %d\n", sectorCurrentRepository);
+    //printf("SECTEUR -- %d\n", sectorCurrentRepository);
 
     if (openFile.find(sectorCurrentRepository) == openFile.end()){
         printf("Insertion en cours ... \n");

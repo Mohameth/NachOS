@@ -248,7 +248,7 @@ FileSystem::Open(const char *name)
     if (sector >= 0){
         if(!existFichier(name) && !directory->isRepository(name)){
             openFile2 = new OpenFile(sector);	// name was found in directory
-            if(!addOpenFile(openFile2,name,sector))
+            if(!addOpenFile(openFile2,name))
             return NULL;
         }
     } 		
@@ -441,10 +441,10 @@ bool FileSystem::changeRepository(const char *name){
 }
 
 bool FileSystem::existRepository(int secteur){
-    return openFile.find(sectorCurrentRepository)!=openFile.end();
+    return openFile.find(secteur)!=openFile.end();
 }
 
-bool FileSystem::addOpenFile(OpenFile* f,const char *name,int secteur) {
+bool FileSystem::addOpenFile(OpenFile* f,const char *name) {
     if(nbFicherOuvert==10){
         return FALSE;
     }

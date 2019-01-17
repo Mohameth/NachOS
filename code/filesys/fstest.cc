@@ -208,6 +208,7 @@ void testCD() {
     if (!fileSystem->changeRepository("..")) printf("ERREUR N \n");
 
     if (!fileSystem->Remove("test12")) printf("C'est Normal FOLDER REMOVE \n");
+    if (!fileSystem->changeRepository("..")) printf("ERREUR O \n");
     //fileSystem->printRepository();
 
     //fileSystem->printRepository();

@@ -103,7 +103,7 @@ class FileSystem {
 	bool changeRepository(const char *name);
 	bool existRepository(int secteur);
 
-	bool addOpenFile(OpenFile* f,const char *name,int secteur);
+	bool addOpenFile(OpenFile* f,const char *name);
 	void removeOpenFile(int id);
 	int getId(OpenFile *f);
 	OpenFile* getOpenFile(int id);

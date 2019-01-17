@@ -4,6 +4,7 @@
 int main()
 {
     //input a puis ENTRER
+    //d'après l'implémentation le buffer ici s doit être terminé par des \0
     char s[4] = "wxyz";
     GetString(s,4);
     ASSERT_TEST(s[0]=='a');

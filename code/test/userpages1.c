@@ -14,7 +14,7 @@ int main()
 {
     UserThreadCreate(f1,0);
     UserThreadCreate(f2,0);
-    PutString("POP");
+    PutString("LLL");
     PutChar('\n');
     Exit(0);
 }

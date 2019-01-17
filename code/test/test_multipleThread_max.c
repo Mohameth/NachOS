@@ -1,6 +1,6 @@
 #include "syscall.h"
 #include "test_utility.h"
-#define NB_THREAD_MAX 2
+#define NB_THREAD_MAX 24
 
 void function(void *arg)
 {

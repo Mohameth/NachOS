@@ -52,7 +52,7 @@ FileTest(int farAddr)
         if (file == NULL) {
             printf("not found\n");
         } else {
-            const char* mess = "Hello There !!!\nNope le coup du Ack de ses morts\nD'après le monde de l'internet c'est bien ce que vous avez fait qu'il faut faire pour instancier la map\nC'est cppreferencies qui l'a dit donc ça doit être bonJe comprends pas c'est ouf, posdkjksq";
+            const char* mess = "Hello There !!! Hello There !!! Hello There !!! Hello There !!! Hello There !!! Hello There !!!";
             file->Write(mess,247);
             delete file;
             fileTransfert->Serveur();

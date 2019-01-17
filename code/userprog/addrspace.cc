@@ -116,6 +116,8 @@ AddrSpace::AddrSpace (OpenFile * executable)
       {
 	  pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
       int freePhysPage = frameProvider->GetEmptyFrame();
+      if (freePhysPage == -1)
+        ASSERT(freePhysPage != -1);
 	  pageTable[i].physicalPage = freePhysPage;
 	  pageTable[i].valid = TRUE;
 	  pageTable[i].use = FALSE;
@@ -165,12 +167,16 @@ AddrSpace::AddrSpace (OpenFile * executable)
 
 AddrSpace::~AddrSpace ()
 {
-  delete stackBitMap;
-  // LB: Missing [] for delete
-  // delete pageTable;
-  delete [] pageTable;
-  // End of modification
-  delete infos;
+    unsigned int i;
+    for (i = 0; i < numPages; i++) {
+        frameProvider->ReleaseFrame(pageTable[i].physicalPage);
+    }
+    // LB: Missing [] for delete
+    // delete pageTable;
+    delete [] pageTable;
+    // End of modification
+    delete stackBitMap;
+    delete infos;
 }
 
 //----------------------------------------------------------------------

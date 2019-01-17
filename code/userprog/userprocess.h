@@ -8,7 +8,7 @@
 
 extern void StartForkExec(int arg);
 
-extern void do_ForkExec (char * filename);
+extern int do_ForkExec (char * filename);
 
 extern void exitProcess();
 

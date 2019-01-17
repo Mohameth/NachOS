@@ -19,7 +19,7 @@
 #include <map>
 
 
-#define UserStackSize		8192	// increase this as necessary!
+#define UserStackSize		1024	// increase this as necessary!
 #define UserThreadStackSize 3
 
 class Semaphore;

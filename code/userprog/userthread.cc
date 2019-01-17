@@ -39,6 +39,8 @@ int do_UserThreadCreate(int f, int arg) {
         return -1;
     }
 
+    ASSERT(currentThread->space->infos->size() < ( UserStackSize / SectorSize)/UserThreadStackSize );
+    
     DEBUG('a', "Create user thread\n");
     Thread *newThread = new Thread("user thread");
     if (newThread == 0) {

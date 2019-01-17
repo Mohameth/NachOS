@@ -29,8 +29,6 @@ static void StartUserThread(int f) {
 int do_UserThreadCreate(int f, int arg) {
     mutex_thread->P(); // critical section start
 
-    ASSERT(currentThread->space->infos->size() < ( UserStackSize / SectorSize)/UserThreadStackSize );
-
     args* a = new args; //contient les arguments: fonction à exectuer et arguments de cette fonction pour le thread
     a->fonction = f;
     a->arg = arg;
@@ -39,6 +37,8 @@ int do_UserThreadCreate(int f, int arg) {
         mutex_thread->V();
         return -1;
     }
+
+    ASSERT(currentThread->space->infos->size() < ( UserStackSize / SectorSize)/UserThreadStackSize );
 
     DEBUG('a', "Create user thread\n");
     Thread *newThread = new Thread("user thread");
